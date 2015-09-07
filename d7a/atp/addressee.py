@@ -16,63 +16,42 @@
 
 class Addressee(object):
 
+  # constructor validates according to specification
   def __init__(self, ucast=False, vid=False, cl=0, id=None):
     self.ucast = ucast
     self.vid   = vid
-    self.cl    = cl
-    self.id    = id
+    self.cl    = self.validate_cl(cl)
+    self.id    = self.validate_id(id)
 
-  # low-level properties
-
-  @property
-  def ucast(self):
-    return self._ucast
-  
-  @ucast.setter
-  def ucast(self, value):
-    self._ucast = bool(value)
-
-  @property
-  def vid(self):
-    return self._vid
-
-  @vid.setter
-  def vid(self, value):
-    self._vid = bool(value)
-
-  @property
-  def cl(self):
-    return self._cl
-
-  @cl.setter
-  def cl(self, value):
+  def validate_cl(self, value):
+    value = int(value)
     if value < 0x0 or value > 0xF:
-      raise Exception("Access Class must be within [0,0xF].")
+      raise ValueError("Access Class must be within [0,0xF].")
+    return value
+
+  def validate_id(self, value):
+    if self.id_length == 0 and value: 
+      raise ValueError("can't set ID when length=0.")
+    if self.id_length == 2 and (value < 0x0 or value > 0xFFFF):
+      raise ValueError("ID with length=2 must be within [0,0xFFFF].")
+    if self.id_length == 8 and (value < 0x0 or value > 0xFFFFFFFFFFFFFFFF):
+      raise ValueError("ID with length=8 must be within [0,0xFFFFFFFFFFFFFFFF]")
+    return value
+
+  def validate(self):
+    self.validate_cl(self.cl)
+    self.validate_id(self.id)
+
+  # model API
 
   @property
-  def id(self):
-    return self._id
-
-  @id.setter
-  def id(self, value):
-    if self.id_length == 0 and value: 
-      raise Exception("can't set ID when length=0.")
-    if self.id_length == 2 and (value < 0x0 or value > 0xFFFF):
-      raise Exception("ID with length=2 must be within [0,0xFFFF].")
-    if self.id_length == 8 and (value < 0x0 or value > 0xFFFFFFFFFFFFFFFF):
-      raise Exception("ID with length=8 must be within [0,0xFFFFFFFFFFFFFFFF]")
-    self._id = value
-
-  # functional API
-
   def uses_unicast(self):
     return self.ucast
 
+  @property
   def uses_broadcast(self):
-    return not self.uses_unicast()
+    return not self.uses_unicast
 
-  def has_virtual_id(self):
-    return self.vid
 
   BROADCAST = 0
   VIRTUAL   = 1
@@ -80,9 +59,17 @@ class Addressee(object):
 
   @property
   def id_type(self):
-    if self.uses_broadcast(): return Addressee.BROADCAST
-    if self.has_virtual_id(): return Addressee.VIRTUAL
+    if not self.ucast: return Addressee.BROADCAST
+    if self.vid: return Addressee.VIRTUAL
     return Addressee.UNIVERSAL
+
+  @property
+  def has_virtual_id(self):
+    return self.id_type == Addressee.VIRTUAL
+  
+  @property
+  def has_universal_id(self):
+    return self.id_type == Addressee.UNIVERSAL
 
   @property
   def id_length(self):
