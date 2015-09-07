@@ -5,7 +5,7 @@
 
 import unittest
 
-from d7a.atp.addressee import Addressee
+from d7a.tp.addressee import Addressee
 
 class TestAddressee(unittest.TestCase):
   def test_unicast(self):
