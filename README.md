@@ -6,6 +6,14 @@ Christophe VG (<contact@christophe.vg>)
 
 TODO
 
+## Installation
+
+We use Cerberus for validating attributes. But we need a version > 0.10:
+
+```bash
+$ sudo pip install git+git://github.com/nicolaiarocci/cerberus.git
+```
+
 ## Modules
 
 TODO

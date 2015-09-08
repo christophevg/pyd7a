@@ -14,7 +14,7 @@ test-%:
 
 coverage:
 	@echo "*** generating unittest coverage report (based on last test run)"
-	@$(COVERAGE) report -m --omit '*__init__.py,*/test/*'
+	@$(COVERAGE) report -m --omit '*__init__.py,*/test/*,*site-packages*,*/support/*'
 
 clean:
 	@rm -f .coverage

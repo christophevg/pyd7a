@@ -8,29 +8,17 @@ import unittest
 from d7a.tp.addressee import Addressee
 
 class TestAddressee(unittest.TestCase):
-  def test_unicast(self):
-    addr = Addressee(ucast=False)
-    self.assertFalse(addr.uses_unicast)
-    addr.ucast = True
-    self.assertTrue(addr.uses_unicast)
-
-  def test_broadcast(self):
-    addr = Addressee(ucast=False)
-    self.assertTrue(addr.uses_broadcast)
-    addr.ucast = True
-    self.assertFalse(addr.uses_broadcast)
-
-  def test_virtual_id(self):
-    addr = Addressee(ucast=True, vid=False, id=0x0)
-    self.assertFalse(addr.has_virtual_id)
-    addr.vid = True
-    self.assertTrue(addr.has_virtual_id)
-
-  def test_universal_id(self):
-    addr = Addressee(ucast=True, vid=False, id=0x0)
-    self.assertTrue(addr.has_universal_id)
-    addr.vid = True
-    self.assertFalse(addr.has_universal_id)
+  def test_default_constructor(self):
+    Addressee()
+  
+  def test_construction(self):
+    Addressee(ucast=True, vid=True,  id=0xFFFF)
+    Addressee(ucast=True, vid=False, id=0xFFFFFFFFFFFFFF)
+  
+  def test_invalid_construction(self):
+    def bad(args, kwargs): Addressee(**kwargs)
+    self.assertRaises(ValueError, bad, [], {"ucast":True, "vid":False})
+    self.assertRaises(ValueError, bad, [], {"ucast":True, "vid":True})
 
   def test_id_type_is_broadcast(self):
     addr = Addressee(ucast=False, vid=False, id=None)
@@ -87,11 +75,11 @@ class TestAddressee(unittest.TestCase):
     self.assertRaises(ValueError, bad)
 
   def test_virtual_addressee_id_consists_of_max_2_bytes(self):
-    def bad(): addr = Addressee(ucast=True,vid=True,id=0xFFFF0)
+    def bad(): addr = Addressee(ucast=True,vid=True,id=0x1FFFF)
     self.assertRaises(ValueError, bad)
 
   def test_universal_addressee_id_consists_of_max_8_bytes(self):
-    def bad(): addr = Addressee(ucast=True,vid=False,id=0xFFFFFFFFFFFFFFFF0)
+    def bad(): addr = Addressee(ucast=True,vid=False,id=0x1FFFFFFFFFFFFFFFF)
     self.assertRaises(ValueError, bad)
 
   def test_access_class_consists_of_max_4_bits(self):
