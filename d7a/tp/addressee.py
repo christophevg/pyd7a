@@ -32,21 +32,21 @@ class Addressee(Validatable):
       "vid"       : { "type": "boolean" },
       "cl"        : { "type": "integer", "min": 0x0, "max": 0xF },
       "id_length" : { "type": "integer", "allowed": [ 0 ] },
-      "id"        : { "type": "integer",  "nullable": True, "allowed": [ None ] }
+      "id"        : { "type": "integer", "nullable": True, "allowed": [ None ] }
     },{
       # virtual
       "ucast"     : { "type": "boolean", "allowed": [ True ] },
       "vid"       : { "type": "boolean", "allowed": [ True ] },
       "cl"        : { "type": "integer", "min": 0x0, "max": 0xF },
       "id_length" : { "type": "integer", "allowed": [ 2 ] },
-      "id"        : { "type": "integer",  "nullable": False, "min":0, "max": 0xFFFF }
+      "id"        : { "type": "integer", "nullable": False, "min":0, "max": 0xFFFF }
     },{
-      # virtual
+      # unicast
       "ucast"     : { "type": "boolean", "allowed": [ True ] },
       "vid"       : { "type": "boolean", "allowed": [ False ] },
       "cl"        : { "type": "integer", "min": 0x0, "max": 0xF },
       "id_length" : { "type": "integer", "allowed": [ 8 ] },
-      "id"        : { "type": "integer",  "nullable": False, "min":0, "max": 0xFFFFFFFFFFFFFF }
+      "id"        : { "type": "integer", "nullable": False, "min":0, "max": 0xFFFFFFFFFFFFFF }
     }
   ]
 
