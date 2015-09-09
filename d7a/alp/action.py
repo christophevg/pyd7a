@@ -25,14 +25,16 @@ class Action(Validatable):
     "operand"  : Types.OBJECT(nullable=True)
   }]
 
-  def __init__(self, group=False, resp=False,
-               operation=NoOperation(), operand=None):
+  def __init__(self, group=False, resp=False, operation=NoOperation()):
     self.group     = group
     self.resp      = resp
     self.operation = operation
-    self.operand   = operand
     super(Action, self).__init__()
 
   @property
   def op(self):
     return self.operation.op
+
+  @property
+  def operand(self):
+    return self.operation.operand

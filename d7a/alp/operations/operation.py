@@ -8,5 +8,8 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 class Operation(object):
   __metaclass__ = ABCMeta
 
+  def __init__(self, operand=None):
+    self.operand = operand
+
   @abstractproperty
   def op(self): pass

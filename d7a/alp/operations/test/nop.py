@@ -11,6 +11,7 @@ class TestNoOperation(unittest.TestCase):
   def test_constructor_and_op_code(self):
     nop = NoOperation()
     self.assertEqual(nop.op, 0)
+    self.assertIsNone(nop.operand)
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestNoOperation)
