@@ -17,4 +17,6 @@ class States(object):
 
   ALL     = [ IDLE, DORMANT, PENDING, ACTIVE, DONE ]
 
-  SCHEMA  = { "type": "integer", "allowed" : ALL }
+  @staticmethod
+  def SCHEMA():
+    return { "type": "integer", "allowed" : States.ALL }

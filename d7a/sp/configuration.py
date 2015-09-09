@@ -34,7 +34,7 @@ class Configuration(Validatable):
     "nls"        : Types.BOOLEAN(),
     "stop_on_err": Types.BOOLEAN(),
     "preferred"  : Types.BOOLEAN(),
-    "state"      : States.SCHEMA,
+    "state"      : States.SCHEMA(),
     "qos"        : Types.OBJECT(),
     "dorm_to"    : Types.OBJECT(),
     "start_id"   : Types.BYTE(),

@@ -36,7 +36,7 @@ class Status(Validatable):
     "nls"        : Types.BOOLEAN(),
     "missed"     : Types.BOOLEAN(),
     "retry"      : Types.BOOLEAN(),
-    "state"      : States.SCHEMA,
+    "state"      : States.SCHEMA(),
     "fifo_token" : Types.BYTE(),
     "request_id" : Types.BYTE(),
     "response_to": Types.OBJECT(),
