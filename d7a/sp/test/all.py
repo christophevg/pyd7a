@@ -5,12 +5,14 @@
 
 import unittest
 
-from d7a.sp.test.qos import TestQoS
+from d7a.sp.test.qos           import TestQoS
+from d7a.sp.test.configuration import TestConfiguration
 
 if __name__ == '__main__':
   tests = [ unittest.TestLoader().loadTestsFromTestCase(test)
             for test in [ 
                           TestQoS,
+                          TestConfiguration
                          ]
           ]
 
