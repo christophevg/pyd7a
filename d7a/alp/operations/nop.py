@@ -6,9 +6,7 @@
 from d7a.alp.operations.operation import Operation
 
 class NoOperation(Operation):
-
-  NOP = 0
-  OP  = NOP
-
-  @property
-  def op(self): return NoOperation.OP
+  def __init__(self):
+    self.OP      = 0
+    self.OPERAND = None
+    super(NoOperation, self).__init__()
