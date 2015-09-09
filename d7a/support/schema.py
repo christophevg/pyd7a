@@ -35,8 +35,8 @@ class Types(object):
     return { "type": "integer", "nullable": False, "min": 0, "max": 0xFF }
 
   @staticmethod
-  def OBJECT():
-    return {  "nullable": False }
+  def OBJECT(nullable=False):
+    return {  "nullable": nullable }
 
   @staticmethod
   def INTEGER(values=None, min=None, max=None):
