@@ -16,3 +16,5 @@ class States(object):
   DONE    = 4  # Terminated Session
 
   ALL     = [ IDLE, DORMANT, PENDING, ACTIVE, DONE ]
+
+  SCHEMA  = { "type": "integer", "allowed" : ALL }
