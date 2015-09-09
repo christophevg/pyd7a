@@ -14,8 +14,6 @@
 #   b3-b0 CL    Access Class of the Addressee
 # ID    0/2/8 bytes ID of the Addressee
 
-import sys
-
 from d7a.support.schema import Validatable
 
 class Addressee(Validatable):
