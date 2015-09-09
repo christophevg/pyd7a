@@ -19,7 +19,7 @@
 # START_ID  1 byte      Start Request identifier
 # ADDRESSEE 1/3/9 bytes D7ATP Addressee
 
-from d7a.support.schema   import Validatable
+from d7a.support.schema   import Validatable, Types
 
 from d7a.types.ct         import CT
 
@@ -31,14 +31,14 @@ from d7a.tp.addressee     import Addressee
 class Configuration(Validatable):
 
   SCHEMA = [{
-    "nls"        : { "type": "boolean", "nullable": False },
-    "stop_on_err": { "type": "boolean", "nullable": False },
-    "preferred"  : { "type": "boolean", "nullable": False },
+    "nls"        : Types.BOOLEAN(),
+    "stop_on_err": Types.BOOLEAN(),
+    "preferred"  : Types.BOOLEAN(),
     "state"      : States.SCHEMA,
-    "qos"        : { "nullable": False },
-    "dorm_to"    : { "nullable": False },
-    "start_id"   : { "type": "integer", "nullable": False, "min": 0, "max": 0xFF },
-    "addressee"  : { "nullable": False }
+    "qos"        : Types.OBJECT(),
+    "dorm_to"    : Types.OBJECT(),
+    "start_id"   : Types.BYTE(),
+    "addressee"  : Types.OBJECT()
   }]
 
   def __init__(self, nls=False, stop_on_err=False, preferred=False,

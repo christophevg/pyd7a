@@ -18,7 +18,7 @@
 # RETRY_TOTAL   1 byte Total retries limit. The maximum total number of
 #                      retries. 0 - no limit
 
-from d7a.support.schema import Validatable
+from d7a.support.schema import Validatable, Types
   
 class QoS(Validatable):
   
@@ -30,14 +30,13 @@ class QoS(Validatable):
   ANY_CAST = 2
 
   SCHEMA = [{
-    "ack_not_void" : { "type": "boolean", "required": True },
-    "resp_mod"     : { "type": "integer", "allowed" : [ NO_CAST, ALL_CAST, ANY_CAST ], "nullable" : True },
-    
-    "ack_period"   : { "type": "integer", "min": 0, "max": 0xFF, "required": True },
-    "retry_single" : { "type": "integer", "min": 0, "max": 0xFF, "required": True },
-    "retry_total"  : { "type": "integer", "min": 0, "max": 0xFF, "required": True }
+    "ack_not_void" : Types.BOOLEAN(),
+    "resp_mod"     : Types.ENUM([ None, NO_CAST, ALL_CAST, ANY_CAST ]),
+    "ack_period"   : Types.BYTE(),
+    "retry_single" : Types.BYTE(),
+    "retry_total"  : Types.BYTE()
   }]
-
+  
   def __init__(self, ack_not_void=False, resp_mod=None, ack_period=0,
                      retry_single=0, retry_total=0):
     self.ack_not_void = ack_not_void

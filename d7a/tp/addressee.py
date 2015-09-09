@@ -14,7 +14,7 @@
 #   b3-b0 CL    Access Class of the Addressee
 # ID    0/2/8 bytes ID of the Addressee
 
-from d7a.support.schema import Validatable
+from d7a.support.schema import Validatable, Types
 
 class Addressee(Validatable):
   
@@ -26,14 +26,14 @@ class Addressee(Validatable):
   SCHEMA = [
     {
       # broadcast
-      "ucast"     : { "type": "boolean", "allowed": [ False ] },
-      "vid"       : { "type": "boolean" },
-      "cl"        : { "type": "integer", "min": 0x0, "max": 0xF },
-      "id_length" : { "type": "integer", "allowed": [ 0 ] },
-      "id"        : { "type": "integer", "nullable": True, "allowed": [ None ] }
+      "ucast"     : Types.BOOLEAN(),
+      "vid"       : Types.BOOLEAN(),
+      "cl"        : Types.BITS(4),
+      "id_length" : Types.restrict(Types.INTEGER(), [0]),
+      "id"        : Types.restrict(Types.INTEGER(), [None])
     },{
       # virtual
-      "ucast"     : { "type": "boolean", "allowed": [ True ] },
+      "ucast"     : Types.restrict(Types.BOOLEAN(), [ True ]),
       "vid"       : { "type": "boolean", "allowed": [ True ] },
       "cl"        : { "type": "integer", "min": 0x0, "max": 0xF },
       "id_length" : { "type": "integer", "allowed": [ 2 ] },
