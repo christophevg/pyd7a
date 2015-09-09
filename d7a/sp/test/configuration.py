@@ -6,8 +6,11 @@
 import unittest
 
 from d7a.types.ct         import CT
+
 from d7a.tp.addressee     import Addressee
+
 from d7a.sp.qos           import QoS
+from d7a.sp.session       import States
 from d7a.sp.configuration import Configuration
 
 class TestConfiguration(unittest.TestCase):
@@ -18,9 +21,7 @@ class TestConfiguration(unittest.TestCase):
     Configuration(nls=True, stop_on_err=True, preferred=True)
   
   def test_configuration_states_construction(self):
-    for s in [ Configuration.IDLE, Configuration.DORMANT, Configuration.PENDING,
-               Configuration.ACTIVE, Configuration.DONE ]:
-      Configuration(state=s)
+    for s in States.ALL: Configuration(state=s)
   
   def test_configuration_start_construction(self):
     Configuration(start_id=0x00) and Configuration(start_id=0xFF)

@@ -24,33 +24,28 @@ from d7a.support.schema   import Validatable
 from d7a.types.ct         import CT
 
 from d7a.sp.qos           import QoS
+from d7a.sp.session       import States
+
 from d7a.tp.addressee     import Addressee
 
 class Configuration(Validatable):
-
-  # SESSION STATES
-  IDLE    = 0  # Inactive Session
-  DORMANT = 1  # The group of Requests needs to be executed within a timeout 
-               # period, which has not expired. After completion of the period, 
-               # the Dormant Session is transformed into Pending Session.
-  PENDING = 2  # The group of Requests needs to be executed as soon as possible.
-  ACTIVE  = 3  # The Session is being currently executed using the D7A Session 
-               # Protocol.
-  DONE    = 4  # Terminated Session
 
   SCHEMA = [{
     "nls"        : { "type": "boolean", "nullable": False },
     "stop_on_err": { "type": "boolean", "nullable": False },
     "preferred"  : { "type": "boolean", "nullable": False },
-    "state"      : { "type": "integer", "allowed" : [ IDLE, DORMANT, PENDING, ACTIVE, DONE ]},
+    "state"      : { "type": "integer", 
+                     "allowed" : [ States.IDLE, States.DORMANT, States.PENDING,
+                                   States.ACTIVE, States.DONE ]},
     "qos"        : { "nullable": False },
     "dorm_to"    : { "nullable": False },
     "start_id"   : { "type": "integer", "nullable": False, "min": 0, "max": 0xFF },
     "addressee"  : { "nullable": False }
   }]
 
-  def __init__(self, nls=False, stop_on_err=False, preferred=False, state=IDLE,
-                     qos=QoS(), dorm_to=CT(), start_id=0, addressee=Addressee()):
+  def __init__(self, nls=False, stop_on_err=False, preferred=False,
+                     state=States.IDLE, qos=QoS(), dorm_to=CT(), start_id=0,
+                     addressee=Addressee()):
     self.nls         = nls
     self.stop_on_err = stop_on_err
     self.preferred   = preferred
