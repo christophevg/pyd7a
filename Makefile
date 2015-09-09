@@ -9,7 +9,7 @@ all: clean test coverage
 test: ${TESTS}
 
 test-%: 
-	@echo "*** performing tests for d7-$(subst test-,,$@)"
+	@echo "*** performing tests for d7a-$(subst test-,,$@)"
 	@$(PYTHON) $(COVERAGE) run --append d7a/$(subst test-,,$@)/test/all.py;
 
 coverage:
