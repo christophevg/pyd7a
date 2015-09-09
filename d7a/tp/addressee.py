@@ -29,22 +29,22 @@ class Addressee(Validatable):
       "ucast"     : Types.BOOLEAN(),
       "vid"       : Types.BOOLEAN(),
       "cl"        : Types.BITS(4),
-      "id_length" : Types.restrict(Types.INTEGER(), [0]),
-      "id"        : Types.restrict(Types.INTEGER(), [None])
+      "id_length" : Types.INTEGER([0]),
+      "id"        : Types.INTEGER([None])
     },{
       # virtual
-      "ucast"     : Types.restrict(Types.BOOLEAN(), [ True ]),
-      "vid"       : { "type": "boolean", "allowed": [ True ] },
-      "cl"        : { "type": "integer", "min": 0x0, "max": 0xF },
-      "id_length" : { "type": "integer", "allowed": [ 2 ] },
-      "id"        : { "type": "integer", "nullable": False, "min":0, "max": 0xFFFF }
+      "ucast"     : Types.BOOLEAN(True),
+      "vid"       : Types.BOOLEAN(True),
+      "cl"        : Types.BITS(4),
+      "id_length" : Types.INTEGER([2]),
+      "id"        : Types.INTEGER(min=0, max=0xFFFF)
     },{
       # unicast
-      "ucast"     : { "type": "boolean", "allowed": [ True ] },
-      "vid"       : { "type": "boolean", "allowed": [ False ] },
-      "cl"        : { "type": "integer", "min": 0x0, "max": 0xF },
-      "id_length" : { "type": "integer", "allowed": [ 8 ] },
-      "id"        : { "type": "integer", "nullable": False, "min":0, "max": 0xFFFFFFFFFFFFFF }
+      "ucast"     : Types.BOOLEAN(True),
+      "vid"       : Types.BOOLEAN(False),
+      "cl"        : Types.BITS(4),
+      "id_length" : Types.INTEGER([8]),
+      "id"        : Types.INTEGER(min=0, max=0xFFFFFFFFFFFFFFFF)
     }
   ]
 

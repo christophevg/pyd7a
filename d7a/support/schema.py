@@ -25,8 +25,10 @@ class Validatable(object):
 
 class Types(object):
   @staticmethod
-  def BOOLEAN():
-    return { "type": "boolean", "nullable": False }
+  def BOOLEAN(value=None):
+    b = { "type": "boolean", "nullable": False }
+    if value is not None: b["allowed"] = [value]
+    return b
 
   @staticmethod
   def BYTE():
@@ -37,8 +39,14 @@ class Types(object):
     return {  "nullable": False }
 
   @staticmethod
-  def INTEGER():
-    return { "type": "integer", "nullable": False }
+  def INTEGER(values=None, min=None, max=None):
+    i = { "type": "integer", "nullable": False }
+    if min    is not None: i["min"]     = min
+    if max    is not None: i["max"]     = max
+    if values is not None:
+      i["allowed"] = values
+      if None in values: i["nullable"] = True
+    return i
 
   @staticmethod
   def ENUM(values):
@@ -48,11 +56,5 @@ class Types(object):
 
   @staticmethod
   def BITS(length, min=0x0, max=None):
-    max = max if max is not None else math.pow(2, length)
+    max = max if max is not None else math.pow(2, length)-1
     return { "type": "integer", "min": 0x0, "max": max }
-
-  @staticmethod
-  def restrict(schema, values):
-    schema["allowed"] = values
-    if None in values: schema["nullable"] = True
-    return schema
