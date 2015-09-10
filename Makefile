@@ -1,16 +1,19 @@
 PYTHON=PYTHONPATH=. python
 COVERAGE=$(shell which coverage)
 
-MODULES=$(subst /,,$(subst d7a/,,$(sort $(dir $(wildcard d7a/*/))))) alp_operations alp_operands
-TESTS=$(addprefix test-,${MODULES})
+PYTHONFILES=$(shell find d7a -name '*.py')
+
+NOSE=/Library/Python/2.7/site-packages/nose/core.py
 
 all: clean test coverage
 
-test: ${TESTS}
-
+test:
+	@echo "*** running all tests"
+	@$(PYTHON) $(COVERAGE) run --append $(NOSE) ${PYTHONFILES}
+	
 test-%: 
 	@echo "*** performing tests for d7a-$(subst _,/,$(subst test-,,$@))"
-	@$(PYTHON) $(COVERAGE) run --append d7a/$(subst _,/,$(subst test-,,$@))/test/all.py;
+	@$(PYTHON) $(COVERAGE) run --append $(NOSE) d7a/$(subst -,/,$(subst test-,,$@))/test/*.py
 
 coverage:
 	@echo "*** generating unittest coverage report (based on last test run)"
