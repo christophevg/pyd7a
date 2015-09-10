@@ -7,6 +7,11 @@ import math
 
 from cerberus import Validator
 
+class ObjectValidator(Validator):
+  def _validate_isinstance(self, clazz, field, value):
+    if not isinstance(value, clazz):
+      self._error(field, "Should be instance of " + clazz.__name__)
+  
 class Validatable(object):
   def __init__(self):
     self.validate()
@@ -14,7 +19,7 @@ class Validatable(object):
   SCHEMA = []
 
   def validate(self):
-    validator = Validator(
+    validator = ObjectValidator(
       { "item": { "oneof_schema" : self.SCHEMA, "type": "dict"} },
       allow_unknown=True
     )
@@ -35,8 +40,14 @@ class Types(object):
     return { "type": "integer", "nullable": False, "min": 0, "max": 0xFF }
 
   @staticmethod
-  def OBJECT(nullable=False):
-    return {  "nullable": nullable }
+  def BYTES():
+    return { "type": ["integer", "list"], "nullable": False, "min": 0, "max": 0xFF }
+
+  @staticmethod
+  def OBJECT(clazz=None, nullable=False):
+    o = {  "nullable": nullable }
+    if clazz is not None: o["isinstance"] = clazz
+    return o
 
   @staticmethod
   def INTEGER(values=None, min=None, max=None):

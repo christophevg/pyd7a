@@ -1,7 +1,7 @@
 PYTHON=PYTHONPATH=. python
 COVERAGE=$(shell which coverage)
 
-MODULES=$(subst /,,$(subst d7a/,,$(sort $(dir $(wildcard d7a/*/))))) alp_operations
+MODULES=$(subst /,,$(subst d7a/,,$(sort $(dir $(wildcard d7a/*/))))) alp_operations alp_operands
 TESTS=$(addprefix test-,${MODULES})
 
 all: clean test coverage
