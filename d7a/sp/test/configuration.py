@@ -36,6 +36,12 @@ class TestConfiguration(unittest.TestCase):
     self.assertRaises(ValueError, bad, [], { "addressee" : None  })
     self.assertRaises(ValueError, bad, [], { "dorm_to"   : None  })
 
+  def test_configuration_bad_composed_objects(self):
+    def bad(args, kwargs): Configuration(**kwargs)
+    self.assertRaises(ValueError, bad, [], { "qos":       CT()  })
+    self.assertRaises(ValueError, bad, [], { "dorm_to":   QoS() })
+    self.assertRaises(ValueError, bad, [], { "addressee": QoS() })
+
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestConfiguration)
   unittest.TextTestRunner(verbosity=1).run(suite)

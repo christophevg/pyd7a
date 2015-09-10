@@ -11,9 +11,10 @@
 #   b5-b0 OP    Operation describing the action
 # ALP Operand   N Bytes
 
-from d7a.support.schema     import Validatable, Types
+from d7a.support.schema           import Validatable, Types
 
-from d7a.alp.operations.nop import NoOperation
+from d7a.alp.operations.operation import Operation
+from d7a.alp.operations.nop       import NoOperation
 
 class Action(Validatable):
 
@@ -21,8 +22,8 @@ class Action(Validatable):
     "group"    : Types.BOOLEAN(),
     "resp"     : Types.BOOLEAN(),
     "op"       : Types.BITS(6),
-    "operation": Types.OBJECT(),
-    "operand"  : Types.OBJECT(nullable=True)
+    "operation": Types.OBJECT(Operation),
+    "operand"  : Types.OBJECT(nullable=True)  # there is no Operand base-class
   }]
 
   def __init__(self, group=False, resp=False, operation=NoOperation()):

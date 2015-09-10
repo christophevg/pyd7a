@@ -19,6 +19,10 @@ class TestAction(unittest.TestCase):
     a = Action()
     self.assertEqual(a.op, 0)
 
+  def test_action_bad_operation(self):
+    def bad(): Action(Action())
+    self.assertRaises(ValueError, bad)
+
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestAction)
   unittest.TextTestRunner(verbosity=2).run(suite)

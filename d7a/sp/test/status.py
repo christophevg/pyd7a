@@ -36,6 +36,12 @@ class TestStatus(unittest.TestCase):
     self.assertRaises(ValueError, bad, [], { "state"      : 5     })
     self.assertRaises(ValueError, bad, [], { "addressee"  : None  })
     self.assertRaises(ValueError, bad, [], { "response_to": None  })
+  
+  def test_configuration_bad_composed_objects(self):
+    def bad(args, kwargs): Status(**kwargs)
+    self.assertRaises(ValueError, bad, [], { "response_to": Addressee() })
+    self.assertRaises(ValueError, bad, [], { "addressee":   CT()        })
+  
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestStatus)

@@ -39,8 +39,8 @@ class Status(Validatable):
     "state"      : States.SCHEMA(),
     "fifo_token" : Types.BYTE(),
     "request_id" : Types.BYTE(),
-    "response_to": Types.OBJECT(),
-    "addressee"  : Types.OBJECT()
+    "response_to": Types.OBJECT(CT),
+    "addressee"  : Types.OBJECT(Addressee)
   }]
 
   def __init__(self, nls=False, missed=False, retry=False, state=States.IDLE,

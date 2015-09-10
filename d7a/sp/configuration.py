@@ -35,10 +35,10 @@ class Configuration(Validatable):
     "stop_on_err": Types.BOOLEAN(),
     "preferred"  : Types.BOOLEAN(),
     "state"      : States.SCHEMA(),
-    "qos"        : Types.OBJECT(),
-    "dorm_to"    : Types.OBJECT(),
+    "qos"        : Types.OBJECT(QoS),
+    "dorm_to"    : Types.OBJECT(CT),
     "start_id"   : Types.BYTE(),
-    "addressee"  : Types.OBJECT()
+    "addressee"  : Types.OBJECT(Addressee)
   }]
 
   def __init__(self, nls=False, stop_on_err=False, preferred=False,
