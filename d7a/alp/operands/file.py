@@ -41,7 +41,7 @@ class Data(Validatable):
     "data"   : Types.BYTES()
   }]
   
-  def __init__(self, offset=Offset(), data=[]):
+  def __init__(self, data=[], offset=Offset()):
     self.offset = offset
     self.data   = data
     super(Data, self).__init__()
