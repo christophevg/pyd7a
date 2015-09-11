@@ -26,21 +26,21 @@ class Addressee(Validatable):
   SCHEMA = [
     {
       # broadcast
-      "ucast"     : Types.BOOLEAN(),
+      "hasid"     : Types.BOOLEAN(),
       "vid"       : Types.BOOLEAN(),
       "cl"        : Types.BITS(4),
       "id_length" : Types.INTEGER([0]),
       "id"        : Types.INTEGER([None])
     },{
       # virtual
-      "ucast"     : Types.BOOLEAN(True),
+      "hasid"     : Types.BOOLEAN(True),
       "vid"       : Types.BOOLEAN(True),
       "cl"        : Types.BITS(4),
       "id_length" : Types.INTEGER([2]),
       "id"        : Types.INTEGER(min=0, max=0xFFFF)
     },{
       # unicast
-      "ucast"     : Types.BOOLEAN(True),
+      "hasid"     : Types.BOOLEAN(True),
       "vid"       : Types.BOOLEAN(False),
       "cl"        : Types.BITS(4),
       "id_length" : Types.INTEGER([8]),
@@ -48,8 +48,8 @@ class Addressee(Validatable):
     }
   ]
 
-  def __init__(self, ucast=False, vid=False, cl=0, id=None):
-    self.ucast = ucast
+  def __init__(self, hasid=False, vid=False, cl=0, id=None):
+    self.hasid = hasid
     self.vid   = vid
     self.cl    = cl
     self.id    = id
@@ -57,10 +57,10 @@ class Addressee(Validatable):
 
   @property
   def id_length(self):
-    return Addressee.length_for(ucast=self.ucast, vid=self.vid)
+    return Addressee.length_for(hasid=self.hasid, vid=self.vid)
 
   @classmethod
-  def length_for(self, ucast=False, vid=False):
-    if not ucast: return Addressee.BROADCAST
-    if ucast and vid: return Addressee.VIRTUAL
+  def length_for(self, hasid=False, vid=False):
+    if not hasid: return Addressee.BROADCAST
+    if hasid and vid: return Addressee.VIRTUAL
     return Addressee.UNIVERSAL

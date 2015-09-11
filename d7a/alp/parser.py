@@ -73,12 +73,12 @@ class Parser(object):
 
   def parse_addressee(self):
     _     = self.s.read("pad:2")
-    ucast = self.s.read("bool")
+    hasid = self.s.read("bool")
     vid   = self.s.read("bool")
     cl    = self.s.read("uint:4")
-    l     = Addressee.length_for(ucast=ucast,vid=vid)
+    l     = Addressee.length_for(hasid=hasid,vid=vid)
     id    = self.s.read("uint:"+str(l*8)) if l > 0 else None
-    return Addressee(ucast=ucast, vid=vid, cl=cl, id=id)
+    return Addressee(hasid=hasid, vid=vid, cl=cl, id=id)
 
   def parse_alp_action(self):
     group     = self.s.read("bool")
