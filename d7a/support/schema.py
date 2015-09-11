@@ -16,6 +16,14 @@ class Validatable(object):
   def __init__(self):
     self.validate()
 
+  def as_dict(self):
+    d = {}
+    for k,v in self.__dict__.iteritems():
+      if not k.isupper():
+        try:    d[k] = v.as_dict()
+        except: d[k] = v
+    return { self.__class__.__name__ : d }
+
   SCHEMA = []
 
   def validate(self):

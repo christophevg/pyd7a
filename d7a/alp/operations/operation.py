@@ -5,7 +5,9 @@
 
 from abc import ABCMeta
 
-class Operation(object):
+from d7a.support.schema import Validatable
+
+class Operation(Validatable):
   __metaclass__ = ABCMeta
 
   def __init__(self, operand=None):

@@ -20,18 +20,6 @@ class TestAddressee(unittest.TestCase):
     self.assertRaises(ValueError, bad, [], {"ucast":True, "vid":False})
     self.assertRaises(ValueError, bad, [], {"ucast":True, "vid":True})
 
-  def test_id_type_is_broadcast(self):
-    addr = Addressee(ucast=False, vid=False, id=None)
-    self.assertEqual(addr.id_type, Addressee.BROADCAST)
-
-  def test_id_type_is_virtual(self):
-    addr = Addressee(ucast=True, vid=True, id=0x0)
-    self.assertEqual(addr.id_type, Addressee.VIRTUAL)
-    
-  def test_id_type_is_universal(self):
-    addr = Addressee(ucast=True, vid=False, id=0x0)
-    self.assertEqual(addr.id_type, Addressee.UNIVERSAL)
-
   def test_id_length_of_broadcast_id(self):
     addr = Addressee(ucast=False, vid=False, id=None)
     self.assertEqual(addr.id_length, 0)

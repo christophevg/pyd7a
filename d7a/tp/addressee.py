@@ -18,10 +18,10 @@ from d7a.support.schema import Validatable, Types
 
 class Addressee(Validatable):
   
-  # addressee ID type
+  # addressee ID length
   BROADCAST = 0
-  VIRTUAL   = 1
-  UNIVERSAL = 2
+  VIRTUAL   = 2
+  UNIVERSAL = 8
   
   SCHEMA = [
     {
@@ -56,15 +56,11 @@ class Addressee(Validatable):
     super(Addressee, self).__init__()
 
   @property
-  def id_type(self):
-    if not self.ucast: return Addressee.BROADCAST
-    if self.vid: return Addressee.VIRTUAL
-    return Addressee.UNIVERSAL
-  
-  @property
   def id_length(self):
-    return {
-      Addressee.BROADCAST : 0,
-      Addressee.VIRTUAL   : 2,
-      Addressee.UNIVERSAL : 8
-    }[self.id_type]
+    return Addressee.length_for(ucast=self.ucast, vid=self.vid)
+
+  @classmethod
+  def length_for(self, ucast=False, vid=False):
+    if not ucast: return Addressee.BROADCAST
+    if ucast and vid: return Addressee.VIRTUAL
+    return Addressee.UNIVERSAL
