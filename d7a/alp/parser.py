@@ -3,15 +3,14 @@
 
 # a parser for ALP commands
 
-# a received ALP command consists of
-# - ALP Status
-# - ALP Payload
-
 from bitstring                    import ConstBitStream, ReadError
 
 from d7a.types.ct                 import CT
 from d7a.sp.status                import Status
 from d7a.tp.addressee             import Addressee
+from d7a.alp.command              import Command
+from d7a.alp.payload              import Payload
+from d7a.alp.action               import Action
 from d7a.alp.operations.responses import ReturnFileData
 from d7a.alp.operands.file        import Offset, Data
 
@@ -19,7 +18,14 @@ class Parser(object):
 
   def parse(self, msg):
     self.s = ConstBitStream(bytes=msg)
-    return self.parse_alp_command()
+    cmd  = self.parse_alp_command()
+    info = {
+      "stream"    : {
+        "pos" : self.s.pos,
+        "len" : len(self.s)
+      }
+    }
+    return (cmd, info)
 
   def parse_alp_command(self):
     interface = None
@@ -28,24 +34,11 @@ class Parser(object):
     opcode    = None
     operation = None
     error     = None
-    try:
-      _         = self.parse_alp_interface_id()
-      interface = self.parse_alp_interface_status()
-      (group, resp, opcode, operation) = self.parse_alp_action()
-    except ReadError:   # read past end of stream
-      error = "read past end of stream"
-    return {
-      "interface" : None if interface is None else interface.as_dict(),
-      "group"     : group,
-      "resp"      : resp,
-      "opcode"    : opcode,
-      "operation" : None if operation is None else operation.as_dict(),
-      "_stream"    : {
-        "pos" : self.s.pos,
-        "len" : len(self.s)
-      },
-      "_error"     : error
-    }
+    _         = self.parse_alp_interface_id()
+    return Command(
+      interface = self.parse_alp_interface_status(),
+      payload   = self.parse_alp_payload()
+    )
 
   def parse_alp_interface_id(self):
     b = self.s.read("uint:8")
@@ -80,22 +73,26 @@ class Parser(object):
     id    = self.s.read("uint:"+str(l*8)) if l > 0 else None
     return Addressee(hasid=hasid, vid=vid, cl=cl, id=id)
 
+  def parse_alp_payload(self):
+    # TODO: extend to multiple actions, only one supported right now
+    action = self.parse_alp_action()
+    return Payload(actions=[action])
+
   def parse_alp_action(self):
     group     = self.s.read("bool")
     resp      = self.s.read("bool")
     op        = self.s.read("uint:6")
     try:
       operation = {
-        32 : self.parse_slp_return_file_data_operation
+        32 : self.parse_alp_return_file_data_operation
       }[op]()
     except KeyError:
       raise NotImplementedError("alp_action " + str(op) + " is not implemented")
-    return (group, resp, op, operation)
+    return Action(group=group, resp=resp, operation=operation)
 
-  def parse_slp_return_file_data_operation(self):
+  def parse_alp_return_file_data_operation(self):
     operand = self.parse_alp_return_file_data_operand()
     return ReturnFileData(operand=operand)
-    
 
   def parse_alp_return_file_data_operand(self):
     offset = self.parse_offset()

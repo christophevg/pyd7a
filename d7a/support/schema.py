@@ -49,7 +49,10 @@ class Types(object):
 
   @staticmethod
   def BYTES():
-    return { "type": ["integer", "list"], "nullable": False, "min": 0, "max": 0xFF }
+    return {
+      "type": "list",
+      "schema": { "type": "integer", "min": 0, "max": 0xFF}
+    }
 
   @staticmethod
   def OBJECT(clazz=None, nullable=False):
@@ -77,3 +80,12 @@ class Types(object):
   def BITS(length, min=0x0, max=None):
     max = max if max is not None else math.pow(2, length)-1
     return { "type": "integer", "min": 0x0, "max": max }
+
+  @staticmethod
+  def LIST(type=None):
+    l = { "type" : "list" }
+    if type:
+      l["schema"] = {
+        "isinstance" : type
+      }
+    return l
