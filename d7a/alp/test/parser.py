@@ -11,15 +11,15 @@ from d7a.alp.parser import Parser
 
 class TestParser(unittest.TestCase):
   def parse_message(self, message):
-    (msg, info) = Parser().parse(message)
+    (cmds, info) = Parser().parse(message)
 
     # full parse?
-    self.assertEqual(info["stream"]["len"], info["stream"]["pos"])
+    self.assertEqual(info["buffer"], 0)
 
-    return (msg, info)
+    return (cmds, info)
     
   def test_first_msg_from_glenn(self):
-    (msg, info) = self.parse_message([
+    (cmds, info) = self.parse_message([
       0xd7,                                           # interface start
       0x04, 0x00, 0x00, 0x00,                         # fifo config
       0x20,                                           # addr (originally 0x00)
@@ -30,11 +30,11 @@ class TestParser(unittest.TestCase):
       0x04,                                           # length
       0x00, 0xf3, 0x00, 0x00                          # data
     ])
-    self.assertEqual(msg.payload.actions[0].operation.op, 32)
-    self.assertEqual(msg.payload.actions[0].operation.operand.length, 4)
+    self.assertEqual(cmds[0].payload.actions[0].operation.op, 32)
+    self.assertEqual(cmds[0].payload.actions[0].operation.operand.length, 4)
 
   def test_empty_data(self):
-    (msg, info) = self.parse_message([
+    (cmds, info) = self.parse_message([
       0xd7,
       0x04, 0x00, 0x00, 0x00,
       0x20,
@@ -44,8 +44,8 @@ class TestParser(unittest.TestCase):
       0x00,
       0x00
     ])
-    self.assertEqual(msg.payload.actions[0].operation.op, 32)
-    self.assertEqual(len(msg.payload.actions[0].operation.operand.data), 0)
+    self.assertEqual(cmds[0].payload.actions[0].operation.op, 32)
+    self.assertEqual(len(cmds[0].payload.actions[0].operation.operand.data), 0)
 
 # 00000000: d7 04 00 00 00 20 24 8a   b6 00 52 0b 35 2c 20 40
 # 00000010: 00 04 00 fa 00 00

@@ -1,6 +1,7 @@
 #!/usr/bin/env PYTHONPATH=../ python
 
 from d7a.alp.parser import Parser
+from pprint import pprint
 
 bytes = [
       0xd7,                                           # interface start
@@ -14,8 +15,6 @@ bytes = [
       0x00, 0xf3, 0x00, 0x00                          # data
     ]
 
-(msg, info) = Parser().parse(bytes)
+(cmds, info) = Parser().parse(bytes)
 
-from pprint import pprint
-
-pprint(msg.as_dict())
+pprint(cmds[0].as_dict())

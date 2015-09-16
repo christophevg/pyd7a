@@ -16,16 +16,49 @@ from d7a.alp.operands.file        import Offset, Data
 
 class Parser(object):
 
+  def __init__(self):
+    self.buffer = []
+
+  def reset(self):
+    self.buffer = []
+    return self
+
+  def shift_buffer(self, start):
+    self.buffer = self.buffer[start:]
+    return self
+
   def parse(self, msg):
-    self.s = ConstBitStream(bytes=msg)
-    cmd  = self.parse_alp_command()
+    self.buffer.extend(msg)
+    return self.parse_buffer()
+    
+  def parse_buffer(self):
+    parsed = 0
+    cmds   = []
+
+    while True:
+      (cmd, info) = self.parse_one_command_from_buffer()
+      if cmd is None: break
+      parsed += info["parsed"]
+      cmds.append(cmd)
+      
+    info["parsed"] = parsed
+    return (cmds, info)
+
+  def parse_one_command_from_buffer(self):
+    self.s = ConstBitStream(bytes=self.buffer)
+    try:
+      cmd = self.parse_alp_command()
+      bits_parsed = self.s.pos
+      self.shift_buffer(bits_parsed/8)
+    except ReadError:
+      cmd = None
+      bits_parsed = 0
+      
     info = {
-      "stream"    : {
-        "pos" : self.s.pos,
-        "len" : len(self.s)
-      }
+      "parsed" : bits_parsed,
+      "buffer" : len(self.buffer) * 8
     }
-    return (cmd, info)
+    return (cmd, info)    
 
   def parse_alp_command(self):
     interface = None

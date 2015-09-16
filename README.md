@@ -86,9 +86,9 @@ A parser for Application Layer Programming commands. From the specification: "_A
 ...       0x04,                                           # length
 ...       0x00, 0xf3, 0x00, 0x00                          # data
 ...     ]
->>> (msg, info) = Parser().parse(bytes)
+>>> (cmds, info) = Parser().parse(bytes)
 >>> from pprint import pprint
->>> pprint(msg.as_dict())
+>>> pprint(cmds[0].as_dict())
 {'__CLASS__': 'Command',
  'interface': {'__CLASS__': 'Status',
                'addressee': {'__CLASS__': 'Addressee',
@@ -120,7 +120,10 @@ A parser for Application Layer Programming commands. From the specification: "_A
                           'resp': False}]}}
 ```
 
+#### Partial Parsing
+
+The parser supports partial parsing and continues with previously unparsed data with consecutive calls. The `examples` folder contains an example called `partial.py` that illustrates this. The `parse()` method basically returns a list of commands it could parse from the currently assembled bytes.
+
 #### Status
 
 Currently the parser only implements the minimal constructions to parse `ReturnFileData` messages. The parser will be kept in sync with the supported messages in the [OSS-7: Open Source Stack for Dash7 Alliance Protocol](https://github.com/MOSAIC-LoPoW/dash7-ap-open-source-stack).
-
