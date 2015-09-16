@@ -33,7 +33,7 @@ $ sudo pip install bitstring
 Minimal survival commands:
 
 ```bash
-$ git clone <location to be determined>
+$ git clone https://github.com/christophevg/pyd7a.git
 $ cd pyd7a
 $ make
 *** running all tests
