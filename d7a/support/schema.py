@@ -7,6 +7,8 @@ import math
 
 from cerberus import Validator
 
+import inspect
+
 class ObjectValidator(Validator):
   def _validate_isinstance(self, clazz, field, value):
     if not isinstance(value, clazz):
@@ -17,12 +19,22 @@ class Validatable(object):
     self.validate()
 
   def as_dict(self):
-    d = {}
-    for k,v in self.__dict__.iteritems():
-      if not k.isupper():
-        try:    d[k] = v.as_dict()
-        except: d[k] = v
-    return { self.__class__.__name__ : d }
+    d = { "__CLASS__" : self.__class__.__name__ }
+    for k, v in self.__dict__.iteritems():
+      if inspect.isclass(v): continue   # skip classes
+      if isinstance(v, list):
+        l = []
+        for i in v:
+          if isinstance(i, Validatable):
+            l.append(i.as_dict())
+          else:
+            l.append(i)
+        d[k] = l
+      elif isinstance(v, Validatable):
+        d[k] = v.as_dict()
+      else:
+        d[k] = v
+    return d
 
   SCHEMA = []
 

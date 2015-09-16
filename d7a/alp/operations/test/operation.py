@@ -13,8 +13,8 @@ class OperandY(object): pass
 def make_operation(operand=None, op=None):
   class MyOperation(Operation):
     def __init__(self, *args, **kwargs):
-      self.OPERAND = operand
-      self.OP      = op
+      self.operand_class = operand
+      self.op     = op
       super(MyOperation, self).__init__(*args, **kwargs)
   return MyOperation
 

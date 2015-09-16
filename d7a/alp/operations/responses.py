@@ -8,6 +8,6 @@ from d7a.alp.operands.file        import Data
 
 class ReturnFileData(Operation):
   def __init__(self, *args, **kwargs):
-    self.OP      = 32
-    self.OPERAND = Data
+    self.op     = 32
+    self.operand_class = Data
     super(ReturnFileData, self).__init__(*args, **kwargs)

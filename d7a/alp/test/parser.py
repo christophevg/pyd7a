@@ -30,7 +30,7 @@ class TestParser(unittest.TestCase):
       0x04,                                           # length
       0x00, 0xf3, 0x00, 0x00                          # data
     ])
-    self.assertEqual(msg.payload.actions[0].operation.OP, 32)
+    self.assertEqual(msg.payload.actions[0].operation.op, 32)
     self.assertEqual(msg.payload.actions[0].operation.operand.length, 4)
 
   def test_empty_data(self):
@@ -44,7 +44,7 @@ class TestParser(unittest.TestCase):
       0x00,
       0x00
     ])
-    self.assertEqual(msg.payload.actions[0].operation.OP, 32)
+    self.assertEqual(msg.payload.actions[0].operation.op, 32)
     self.assertEqual(len(msg.payload.actions[0].operation.operand.data), 0)
 
 # 00000000: d7 04 00 00 00 20 24 8a   b6 00 52 0b 35 2c 20 40
