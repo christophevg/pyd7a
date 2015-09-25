@@ -37,9 +37,9 @@ $ git clone https://github.com/christophevg/pyd7a.git
 $ cd pyd7a
 $ make
 *** running all tests
-.......................................................
+...................................................................
 ----------------------------------------------------------------------
-Ran 55 tests in 0.746s
+Ran 67 tests in 0.967s
 
 OK
 *** generating unittest coverage report (based on last test run)
@@ -49,9 +49,9 @@ d7a/alp/action                    14      0   100%
 d7a/alp/command                    9      0   100%   
 d7a/alp/operands/file             18      0   100%   
 d7a/alp/operations/nop             6      0   100%   
-d7a/alp/operations/operation      12      0   100%   
+d7a/alp/operations/operation      10      0   100%   
 d7a/alp/operations/responses       7      0   100%   
-d7a/alp/parser                    75      2    97%   89-90
+d7a/alp/parser                   119      0   100%   
 d7a/alp/payload                    7      0   100%   
 d7a/sp/configuration              17      0   100%   
 d7a/sp/qos                        13      0   100%   
@@ -60,7 +60,7 @@ d7a/sp/status                     16      0   100%
 d7a/tp/addressee                  19      0   100%   
 d7a/types/ct                      11      0   100%   
 ------------------------------------------------------------
-TOTAL                            233      2    99%
+TOTAL                            275      0   100%
 ```
 
 If all tests ran without any errors, you're good to go.

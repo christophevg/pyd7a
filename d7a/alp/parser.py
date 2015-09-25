@@ -14,14 +14,12 @@ from d7a.alp.action               import Action
 from d7a.alp.operations.responses import ReturnFileData
 from d7a.alp.operands.file        import Offset, Data
 
+class ParseError(Exception): pass
+
 class Parser(object):
 
   def __init__(self):
     self.buffer = []
-
-  def reset(self):
-    self.buffer = []
-    return self
 
   def shift_buffer(self, start):
     self.buffer = self.buffer[start:]
@@ -45,20 +43,47 @@ class Parser(object):
     return (cmds, info)
 
   def parse_one_command_from_buffer(self):
-    self.s = ConstBitStream(bytes=self.buffer)
-    try:
-      cmd = self.parse_alp_command()
-      bits_parsed = self.s.pos
-      self.shift_buffer(bits_parsed/8)
-    except ReadError:
-      cmd = None
-      bits_parsed = 0
+    retry       = True    # until we have one or don't have enough
+    errors      = []
+    cmd         = None
+    bits_parsed = 0
+    while retry and len(self.buffer) > 0:
+      try:
+        self.s      = ConstBitStream(bytes=self.buffer)
+        cmd         = self.parse_alp_command()
+        bits_parsed = self.s.pos
+        self.shift_buffer(bits_parsed/8)
+        retry = False         # got one, carry on
+      except ReadError:       # not enough to read, carry on and wait for more
+        retry = False
+      except ParseError as e: # actual problem with current buffer, need to skip
+        errors.append({
+          "error"   : e.args[0],
+          "buffer"  : list(self.buffer),
+          "pos"     : self.s.pos,
+          "skipped" : self.skip_bad_buffer_content()
+        })
       
     info = {
       "parsed" : bits_parsed,
-      "buffer" : len(self.buffer) * 8
+      "buffer" : len(self.buffer) * 8,
+      "errors" : errors
     }
     return (cmd, info)    
+
+  def skip_bad_buffer_content(self):
+    # skip until we find 0xd7, which might be a valid starting point
+    try:
+      self.buffer.pop(0)                      # first might be 0xd7
+      pos = self.buffer.index(0xd7)
+      self.buffer = self.buffer[pos:]
+      return pos + 1
+    except IndexError:                        # empty buffer
+      return 0
+    except ValueError:                        # empty buffer, reported by .index
+      skipped = len(self.buffer) + 1          # popped first item already
+      self.buffer = []
+      return skipped
 
   def parse_alp_command(self):
     interface = None
@@ -75,7 +100,7 @@ class Parser(object):
 
   def parse_alp_interface_id(self):
     b = self.s.read("uint:8")
-    if b != 0xd7: raise Exception("expected 0xd7, found {0}".format(b))
+    if b != 0xd7: raise ParseError("expected 0x7d, found {0}".format(b))
 
   def parse_alp_interface_status(self):
     nls         = self.s.read("bool")
@@ -120,7 +145,7 @@ class Parser(object):
         32 : self.parse_alp_return_file_data_operation
       }[op]()
     except KeyError:
-      raise NotImplementedError("alp_action " + str(op) + " is not implemented")
+      raise ParseError("alp_action " + str(op) + " is not implemented")
     return Action(group=group, resp=resp, operation=operation)
 
   def parse_alp_return_file_data_operation(self):
