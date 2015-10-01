@@ -32,3 +32,9 @@ class CT(Validatable):
 
   def __int__(self):
     return int(math.pow(4, self.exp) * self.mant)
+
+  def __iter__(self):
+    byte = 0
+    byte |= self.exp << 5
+    byte += self.mant
+    yield byte

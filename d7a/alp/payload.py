@@ -18,3 +18,8 @@ class Payload(Validatable):
   def __init__(self, actions=[]):
     self.actions = actions
     super(Payload, self).__init__()
+
+  def __iter__(self):
+    for action in self.actions:
+      for byte in action:
+        yield byte

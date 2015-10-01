@@ -3,6 +3,8 @@
 
 # class implementations of File {*} Operands
 
+import struct
+
 from d7a.support.schema import Validatable, Types
 
 class Offset(Validatable):
@@ -33,6 +35,24 @@ class Offset(Validatable):
     self.offset = offset
     super(Offset, self).__init__()
 
+  def __iter__(self):
+    yield chr(self.id)
+    
+    byte = 0
+    byte += (self.size - 1) << 6
+
+    if self.size == 1:
+      byte += self.offset
+      yield byte
+    else:
+      offset = bytearray(struct.pack(">I", self.offset))
+      if self.size == 2:   offset = offset[2:]
+      elif self.size == 3: offset = offset[1:]
+      
+      byte += offset[0]
+      yield byte
+      for byte in offset[1:]: yield byte
+
 class Data(Validatable):
 
   SCHEMA = [{
@@ -54,3 +74,8 @@ class Data(Validatable):
   # the Python way ;-)
   def __len__(self):
     return self.length
+
+  def __iter__(self):
+    for byte in self.offset: yield byte
+    yield chr(self.length)
+    for byte in self.data: yield chr(byte)

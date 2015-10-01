@@ -42,6 +42,22 @@ class TestStatus(unittest.TestCase):
     self.assertRaises(ValueError, bad, [], { "response_to": Addressee() })
     self.assertRaises(ValueError, bad, [], { "addressee":   CT()        })
   
+  def test_byte_generation(self):
+    bytes = bytearray(Status())
+    self.assertEqual(len(bytes), 5)
+    self.assertEqual(bytes[0], int('00000000', 2)) # nls, missed, retry, state
+    self.assertEqual(bytes[1], int('00000000', 2)) # fifo_token
+    self.assertEqual(bytes[2], int('00000000', 2)) # request_id
+    self.assertEqual(bytes[3], int('00000000', 2)) # response_to CT
+    self.assertEqual(bytes[4], int('00000000', 2)) # addressee
+
+    bytes = bytearray(Status(nls=True, missed=True, retry=True))
+    self.assertEqual(len(bytes), 5)
+    self.assertEqual(bytes[0], int('11100000', 2)) # nls, missed, retry, state
+    self.assertEqual(bytes[1], int('00000000', 2)) # fifo_token
+    self.assertEqual(bytes[2], int('00000000', 2)) # request_id
+    self.assertEqual(bytes[3], int('00000000', 2)) # response_to CT
+    self.assertEqual(bytes[4], int('00000000', 2)) # addressee
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestStatus)

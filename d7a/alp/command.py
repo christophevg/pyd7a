@@ -18,9 +18,13 @@ class Command(Validatable):
     "interface": Types.OBJECT(Status),
     "payload"  : Types.OBJECT(Payload)
   }]
-  
 
   def __init__(self, interface=None, payload=None):
     self.interface = interface
     self.payload   = payload
     super(Command, self).__init__()
+
+  def __iter__(self):
+    yield chr(0xd7)
+    for byte in self.interface: yield byte
+    for byte in self.payload:   yield byte

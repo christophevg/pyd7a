@@ -33,6 +33,10 @@ class TestCT(unittest.TestCase):
     self.assertEqual(int(CT(2,2)),  32)
     self.assertEqual(int(CT(3,3)), 192)
 
+  def test_byte_generation(self):
+    self.assertEqual( bytearray(CT(1, 1))[0], int('00100001', 2))
+    self.assertEqual( bytearray(CT(7,31))[0], int('11111111', 2))
+
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestCT)
   unittest.TextTestRunner(verbosity=2).run(suite)

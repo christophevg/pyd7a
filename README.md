@@ -127,3 +127,11 @@ The parser supports partial parsing and continues with previously unparsed data 
 #### Status
 
 Currently the parser only implements the minimal constructions to parse `ReturnFileData` messages. The parser will be kept in sync with the supported messages in the [OSS-7: Open Source Stack for Dash7 Alliance Protocol](https://github.com/MOSAIC-LoPoW/dash7-ap-open-source-stack).
+
+### ALP Message Generator
+
+
+
+#### Status
+
+Currently the message generator only implements the minimal constructions to generate 'ReturnFileData' messages. The generator will be kept in sync with the parser.

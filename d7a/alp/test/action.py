@@ -23,6 +23,17 @@ class TestAction(unittest.TestCase):
     def bad(): Action(Action())
     self.assertRaises(ValueError, bad)
 
+  def test_byte_generation(self):
+    bytes = bytearray(Action())
+    self.assertEqual(len(bytes), 1)
+    self.assertEqual(bytes[0], int('00000000', 2))
+
+    bytes = bytearray(Action(group=True, resp=True))
+    self.assertEqual(len(bytes), 1)
+    self.assertEqual(bytes[0], int('11000000', 2))
+
+    # TODO: use mocking to create operations
+
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestAction)
   unittest.TextTestRunner(verbosity=2).run(suite)

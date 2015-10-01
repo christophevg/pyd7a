@@ -22,3 +22,7 @@ class Operation(Validatable):
                         self.operand_class.__name__
                       ))
     self.operand = operand
+
+  def __iter__(self):
+    if self.operand:
+      for byte in self.operand: yield byte

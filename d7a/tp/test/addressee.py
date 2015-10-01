@@ -74,6 +74,36 @@ class TestAddressee(unittest.TestCase):
     def bad(): addr = Addressee(cl=0xFF)
     self.assertRaises(ValueError, bad)
 
+  # byte generation
+  
+  def test_byte_generation(self):
+    tests = [
+      (Addressee(),                '00000000'),
+      (Addressee(vid=True),        '00010000'),
+      (Addressee(vid=True, cl=15), '00011111')
+    ]
+    for test in tests:
+      self.assertEqual(bytearray(test[0])[0], int(test[1], 2))
+    
+    bs = bytearray(Addressee(hasid=True, vid=True, id=0x1234))
+    self.assertEqual(len(bs), 3)
+    self.assertEqual(bs[0], int('00110000', 2))
+    self.assertEqual(bs[1], int('00010010', 2))
+    self.assertEqual(bs[2], int('00110100', 2))
+
+    bs = bytearray(Addressee(hasid=True, id=0x1234567890123456))
+    self.assertEqual(len(bs), 9)
+    self.assertEqual(bs[0], int('00100000', 2))
+    self.assertEqual(bs[1], int('00010010', 2))
+    self.assertEqual(bs[2], int('00110100', 2))
+    self.assertEqual(bs[3], int('01010110', 2))
+    self.assertEqual(bs[4], int('01111000', 2))
+    self.assertEqual(bs[5], int('10010000', 2))
+    self.assertEqual(bs[6], int('00010010', 2))
+    self.assertEqual(bs[7], int('00110100', 2))
+    self.assertEqual(bs[8], int('01010110', 2))
+    
+
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestAddressee)
   unittest.TextTestRunner(verbosity=2).run(suite)

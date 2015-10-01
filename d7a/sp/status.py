@@ -55,3 +55,18 @@ class Status(Validatable):
     self.response_to = response_to
     self.addressee   = addressee
     super(Status, self).__init__()
+
+  def __iter__(self):
+    byte = 0;
+    if self.nls:    byte |= 1 << 7
+    if self.missed: byte |= 1 << 6
+    if self.retry:  byte |= 1 << 5
+    # padding << 4 & << 3
+    if self.state:  byte += self.state  # 2 1 0
+    yield byte
+
+    yield chr(self.fifo_token)
+    yield chr(self.request_id)
+
+    for byte in self.response_to: yield byte
+    for byte in self.addressee: yield byte

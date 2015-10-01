@@ -14,6 +14,8 @@
 #   b3-b0 CL    Access Class of the Addressee
 # ID    0/2/8 bytes ID of the Addressee
 
+import struct
+
 from d7a.support.schema import Validatable, Types
 
 class Addressee(Validatable):
@@ -64,3 +66,15 @@ class Addressee(Validatable):
     if not hasid: return Addressee.BROADCAST
     if hasid and vid: return Addressee.VIRTUAL
     return Addressee.UNIVERSAL
+
+  def __iter__(self):
+    byte = 0
+    # pad 2 << 7 << 6
+    if self.hasid: byte |= 1 << 5
+    if self.vid:   byte |= 1 << 4
+    byte += self.cl
+    yield byte
+    
+    if self.id_length:
+      id = bytearray(struct.pack(">Q", self.id))[8-self.id_length:]
+      for byte in id: yield byte

@@ -39,3 +39,12 @@ class Action(Validatable):
   @property
   def operand(self):
     return self.operation.operand
+
+  def __iter__(self):
+    byte = 0
+    if self.group: byte |= 1 << 7
+    if self.resp:  byte |= 1 << 6
+    byte += self.op
+    yield byte
+    
+    for byte in self.operation: yield byte

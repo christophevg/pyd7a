@@ -13,6 +13,10 @@ class TestNoOperation(unittest.TestCase):
     self.assertEqual(nop.op, 0)
     self.assertIsNone(nop.operand)
 
+  def test_byte_generation(self):
+    bytes = bytearray(NoOperation())
+    self.assertEqual(len(bytes), 0)
+
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestNoOperation)
   unittest.TextTestRunner(verbosity=2).run(suite)
