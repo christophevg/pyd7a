@@ -127,9 +127,9 @@ class Parser(object):
     hasid = self.s.read("bool")
     vid   = self.s.read("bool")
     cl    = self.s.read("uint:4")
-    l     = Addressee.length_for(hasid=hasid,vid=vid)
+    l     = Addressee.length_for(hasid=hasid, vid=vid)
     id    = self.s.read("uint:"+str(l*8)) if l > 0 else None
-    return Addressee(hasid=hasid, vid=vid, cl=cl, id=id)
+    return Addressee(vid=vid, cl=cl, id=id)
 
   def parse_alp_payload(self):
     # TODO: extend to multiple actions, only one supported right now

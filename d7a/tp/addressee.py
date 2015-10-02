@@ -50,8 +50,8 @@ class Addressee(Validatable):
     }
   ]
 
-  def __init__(self, hasid=False, vid=False, cl=0, id=None):
-    self.hasid = hasid
+  def __init__(self, cl=0, vid=False, id=None):
+    self.hasid = id is not None
     self.vid   = vid
     self.cl    = cl
     self.id    = id
