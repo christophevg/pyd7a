@@ -17,7 +17,7 @@ class TestParser(unittest.TestCase):
     (cmds, info) = self.parser.parse([
       0xd7,                                           # interface start
       0x04, 0x00, 0x00, 0x00,                         # fifo config
-      0x20,                                           # addr (originally 0x00)
+      0x20,                                           # universal id = 8 bytes
       0x24, 0x8a, 0xb6, 0x01, 0x51, 0xc7, 0x96, 0x6d, # ID
       0x20,                                           # action=32/ReturnFileData
       0x40,                                           # File ID
