@@ -53,3 +53,20 @@ class Configuration(Validatable):
     self.start_id    = start_id
     self.addressee   = addressee
     super(Configuration, self).__init__()
+
+  def __iter__(self):
+    byte = 0
+    if self.nls:         byte |= 1 << 7
+    # rfu
+    if self.stop_on_err: byte |= 1 << 5
+    if self.preferred:   byte |= 1 << 4
+    # rfu
+    byte += self.state
+    yield byte
+    
+    for byte in self.qos:     yield byte
+    for byte in self.dorm_to: yield byte
+
+    yield self.start_id
+    
+    for byte in self.addressee: yield byte

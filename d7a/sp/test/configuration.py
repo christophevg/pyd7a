@@ -42,6 +42,30 @@ class TestConfiguration(unittest.TestCase):
     self.assertRaises(ValueError, bad, [], { "dorm_to":   QoS() })
     self.assertRaises(ValueError, bad, [], { "addressee": QoS() })
 
+  def test_byte_generation(self):
+    # TODO: use mocking framework to mock sub-objects
+    bytes = bytearray(Configuration())
+    self.assertEqual(len(bytes), 8)
+    self.assertEquals(bytes[0], int( '00000000', 2)) # fifo control
+    self.assertEquals(bytes[1], int( '00000000', 2)) # qos
+    self.assertEquals(bytes[2], int( '00000000', 2)) # qos
+    self.assertEquals(bytes[3], int( '00000000', 2)) # qos
+    self.assertEquals(bytes[4], int( '00000000', 2)) # qos
+    self.assertEquals(bytes[5], int( '00000000', 2)) # dorm_to (CT)
+    self.assertEquals(bytes[6], int( '00000000', 2)) # start_id
+    self.assertEquals(bytes[7], int( '00000000', 2)) # addressee
+
+    bytes = bytearray(Configuration(
+      nls         = True,
+      stop_on_err = True,
+      preferred   = True,
+      state       = States.PENDING,
+      start_id    = 0x12
+    ))
+    self.assertEqual(len(bytes), 8)
+    self.assertEquals(bytes[0], int( '10110010', 2)) # fifo control
+    self.assertEquals(bytes[6], int( '00010010', 2)) # start_id
+
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestConfiguration)
   unittest.TextTestRunner(verbosity=1).run(suite)

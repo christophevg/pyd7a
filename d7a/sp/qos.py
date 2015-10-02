@@ -45,3 +45,18 @@ class QoS(Validatable):
     self.retry_single = retry_single
     self.retry_total  = retry_total
     super(QoS, self).__init__()
+
+  def __iter__(self):
+    byte = 0
+    # rfu
+    # rfu
+    # rfu
+    if self.ack_not_void: byte |= 1 << 4
+    # rfu
+    # rfu
+    byte += self.resp_mod
+    yield byte
+    
+    yield chr(self.ack_period)
+    yield chr(self.retry_single)
+    yield chr(self.retry_total)

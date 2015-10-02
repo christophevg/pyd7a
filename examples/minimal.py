@@ -1,4 +1,4 @@
-#!/usr/bin/env PYTHONPATH=../ python
+#!/usr/bin/env PYTHONPATH=../:. python
 
 from d7a.alp.parser import Parser
 from pprint import pprint
@@ -18,3 +18,5 @@ bytes = [
 (cmds, info) = Parser().parse(bytes)
 
 pprint(cmds[0].as_dict())
+
+print([ "0x{:02x}".format(b) for b in bytearray(cmds[0]) ])

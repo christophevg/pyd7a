@@ -10,12 +10,17 @@
 from d7a.support.schema           import Validatable, Types
 
 from d7a.sp.status                import Status
+from d7a.sp.configuration         import Configuration
 from d7a.alp.payload              import Payload
 
 class Command(Validatable):
   
   SCHEMA = [{
     "interface": Types.OBJECT(Status),
+    "payload"  : Types.OBJECT(Payload)
+  },
+  {
+    "interface": Types.OBJECT(Configuration),
     "payload"  : Types.OBJECT(Payload)
   }]
 

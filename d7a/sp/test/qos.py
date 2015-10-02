@@ -40,6 +40,27 @@ class TestQoS(unittest.TestCase):
     self.assertRaises(ValueError, bad, [], { "retry_single": 0x1FF })
     self.assertRaises(ValueError, bad, [], { "retry_total" : -1    })
     self.assertRaises(ValueError, bad, [], { "retry_total" : 0x1FF })
+  
+  def test_byte_generation(self):
+    bytes = bytearray(QoS())
+    self.assertEqual(len(bytes), 4)
+    self.assertEqual(bytes[0], int('00000000', 2))
+    self.assertEqual(bytes[1], int('00000000', 2))
+    self.assertEqual(bytes[2], int('00000000', 2))
+    self.assertEqual(bytes[3], int('00000000', 2))
+
+    bytes = bytearray(QoS(
+      ack_not_void= True,
+      resp_mod    = QoS.ANY_CAST,
+      ack_period  = 0x12,
+      retry_single= 0x34,
+      retry_total = 0x56
+    ))
+    self.assertEqual(len(bytes), 4)
+    self.assertEqual(bytes[0], int('00010010', 2))
+    self.assertEqual(bytes[1], int('00010010', 2))
+    self.assertEqual(bytes[2], int('00110100', 2))
+    self.assertEqual(bytes[3], int('01010110', 2))
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestQoS)
