@@ -28,6 +28,12 @@ For the manipulation of bitstrings, we use `bitstring`:
 $ sudo pip install bitstring
 ```
 
+PyCRC is used for CRC calculations:
+
+```bash
+$ sudo pip install PyCRC
+```
+
 ### pyD7A
 
 Minimal survival commands:
