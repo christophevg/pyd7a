@@ -2,7 +2,7 @@
 from bitstring import ConstBitStream, ReadError
 from d7a.d7anp.frame import Frame
 from d7a.d7anp.control import Control
-
+from d7a.d7atp.parser import Parser as D7atpParser
 
 class Parser(object):
 
@@ -29,5 +29,6 @@ class Parser(object):
     else:
       origin_access_id = []
 
-    payload=map(ord,bitstream.read("bytes:" + str(payload_length)))
-    return Frame(control=control, origin_access_id=origin_access_id, payload=payload)
+    #payload=map(ord,bitstream.read("bytes:" + str(payload_length)))
+    d7atp_frame = D7atpParser().parse(bitstream, payload_length)
+    return Frame(control=control, origin_access_id=origin_access_id, d7atp_frame=d7atp_frame)
