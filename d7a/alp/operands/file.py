@@ -79,3 +79,16 @@ class Data(Validatable):
     for byte in self.offset: yield byte
     yield chr(self.length)
     for byte in self.data: yield chr(byte)
+
+class DataRequest(Validatable):
+
+  SCHEMA = [{
+    "offset" : Types.OBJECT(Offset),
+    "length" : Types.BYTE()
+  }]
+
+  def __init__(self, length, offset=Offset()):
+    self.offset = offset
+    self.length = length
+    super(DataRequest, self).__init__()
+

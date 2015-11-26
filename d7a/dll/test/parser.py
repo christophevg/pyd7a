@@ -1,6 +1,9 @@
 import unittest
 import binascii
 from PyCRC.CRCCCITT import CRCCCITT
+from d7a.alp.operands.file import DataRequest, Data
+from d7a.alp.operations.requests import RequestFileData
+from d7a.alp.operations.responses import ReturnFileData
 
 from d7a.dll.parser import Parser
 
@@ -47,6 +50,13 @@ class TestParser(unittest.TestCase):
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.should_respond_only_if_ack_return_template_not_empty)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.dialog_id, 0xe9)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.transaction_id, 0)
+    self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_payload.actions), 1)
+    alp_action = frame.d7anp_frame.d7atp_frame.alp_payload.actions[0]
+    self.assertEqual(type(alp_action.operation), RequestFileData)
+    self.assertEqual(type(alp_action.operand), DataRequest)
+    self.assertEqual(alp_action.operand.offset.id, 0)
+    self.assertEqual(alp_action.operand.offset.offset, 0)
+    self.assertEqual(alp_action.operand.length, 8)
     # TODO self.assertEqual(len(frame.payload), 16)
     hexstring = binascii.hexlify(bytearray(read_id_command[:-2])).decode('hex') # TODO there must be an easier way...
     self.assertEqual(frame.crc16, CRCCCITT(version='FFFF').calculate(hexstring))
@@ -94,6 +104,12 @@ class TestParser(unittest.TestCase):
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.should_respond_only_if_ack_return_template_not_empty)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.dialog_id, 0xe9)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.transaction_id, 0)
-    # TODO self.assertEqual(len(frame.payload), 25)
+    self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_payload.actions), 1)
+    alp_action = frame.d7anp_frame.d7atp_frame.alp_payload.actions[0]
+    self.assertEqual(type(alp_action.operation), ReturnFileData)
+    self.assertEqual(type(alp_action.operand), Data)
+    self.assertEqual(alp_action.operand.offset.id, 0)
+    self.assertEqual(alp_action.operand.offset.offset, 0)
+    self.assertEqual(alp_action.operand.length, 8)
     hexstring = binascii.hexlify(bytearray(frame_data[:-2])).decode('hex') # TODO there must be an easier way...
     self.assertEqual(frame.crc16, CRCCCITT(version='FFFF').calculate(hexstring))

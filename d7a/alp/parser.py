@@ -12,7 +12,8 @@ from d7a.alp.command              import Command
 from d7a.alp.payload              import Payload
 from d7a.alp.action               import Action
 from d7a.alp.operations.responses import ReturnFileData
-from d7a.alp.operands.file        import Offset, Data
+from d7a.alp.operations.requests  import RequestFileData
+from d7a.alp.operands.file        import Offset, Data, DataRequest
 
 class ParseError(Exception): pass
 
@@ -49,9 +50,9 @@ class Parser(object):
     bits_parsed = 0
     while retry and len(self.buffer) > 0:
       try:
-        self.s      = ConstBitStream(bytes=self.buffer)
-        cmd         = self.parse_alp_command()
-        bits_parsed = self.s.pos
+        s           = ConstBitStream(bytes=self.buffer)
+        cmd         = self.parse_alp_command(s)
+        bits_parsed = s.pos
         self.shift_buffer(bits_parsed/8)
         retry = False         # got one, carry on
       except ReadError:       # not enough to read, carry on and wait for more
@@ -60,7 +61,7 @@ class Parser(object):
         errors.append({
           "error"   : e.args[0],
           "buffer"  : list(self.buffer),
-          "pos"     : self.s.pos,
+          "pos"     : s.pos,
           "skipped" : self.skip_bad_buffer_content()
         })
       
@@ -85,82 +86,92 @@ class Parser(object):
       self.buffer = []
       return skipped
 
-  def parse_alp_command(self):
+  def parse_alp_command(self, s):
     interface = None
     group     = None
     resp      = None
     opcode    = None
     operation = None
     error     = None
-    _         = self.parse_alp_interface_id()
+    _         = self.parse_alp_interface_id(s)
     return Command(
-      interface = self.parse_alp_interface_status(),
-      payload   = self.parse_alp_payload()
+      interface = self.parse_alp_interface_status(s),
+      payload   = self.parse_alp_payload(s)
     )
 
-  def parse_alp_interface_id(self):
-    b = self.s.read("uint:8")
+  def parse_alp_interface_id(self, s):
+    b = s.read("uint:8")
     if b != 0xd7: raise ParseError("expected 0x7d, found {0}".format(b))
 
-  def parse_alp_interface_status(self):
-    nls         = self.s.read("bool")
-    missed      = self.s.read("bool")
-    retry       = self.s.read("bool")
-    _           = self.s.read("pad:2" )
-    state       = self.s.read("uint:3")
-    fifo_token  = self.s.read("uint:8")
-    request_id  = self.s.read("uint:8")
-    response_to = self.parse_ct()
-    addressee   = self.parse_addressee()
+  def parse_alp_interface_status(self, s):
+    nls         = s.read("bool")
+    missed      = s.read("bool")
+    retry       = s.read("bool")
+    _           = s.read("pad:2" )
+    state       = s.read("uint:3")
+    fifo_token  = s.read("uint:8")
+    request_id  = s.read("uint:8")
+    response_to = self.parse_ct(s)
+    addressee   = self.parse_addressee(s)
 
     return Status(nls=nls, missed=missed, retry=retry, state=state,
                   fifo_token=fifo_token, request_id=request_id,
                   response_to=response_to, addressee=addressee)
 
-  def parse_ct(self):
-    exp  = self.s.read("uint:3")
-    mant = self.s.read("uint:5")
+  def parse_ct(self, s):
+    exp  = s.read("uint:3")
+    mant = s.read("uint:5")
     return CT(exp=exp, mant=mant)
 
-  def parse_addressee(self):
-    _     = self.s.read("pad:2")
-    hasid = self.s.read("bool")
-    vid   = self.s.read("bool")
-    cl    = self.s.read("uint:4")
+  def parse_addressee(self, s):
+    _     = s.read("pad:2")
+    hasid = s.read("bool")
+    vid   = s.read("bool")
+    cl    = s.read("uint:4")
     l     = Addressee.length_for(hasid=hasid, vid=vid)
-    id    = self.s.read("uint:"+str(l*8)) if l > 0 else None
+    id    = s.read("uint:"+str(l*8)) if l > 0 else None
     return Addressee(vid=vid, cl=cl, id=id)
 
-  def parse_alp_payload(self):
+  def parse_alp_payload(self, s):
     # TODO: extend to multiple actions, only one supported right now
-    action = self.parse_alp_action()
+    action = self.parse_alp_action(s)
     return Payload(actions=[action])
 
-  def parse_alp_action(self):
-    group     = self.s.read("bool")
-    resp      = self.s.read("bool")
-    op        = self.s.read("uint:6")
+  def parse_alp_action(self, s):
+    group     = s.read("bool")
+    resp      = s.read("bool")
+    op        = s.read("uint:6")
     try:
       operation = {
-        32 : self.parse_alp_return_file_data_operation
-      }[op]()
+        1 :   self.parse_alp_read_file_data_operation,
+        32 :  self.parse_alp_return_file_data_operation
+      }[op](s)
     except KeyError:
       raise ParseError("alp_action " + str(op) + " is not implemented")
     return Action(group=group, resp=resp, operation=operation)
 
-  def parse_alp_return_file_data_operation(self):
-    operand = self.parse_alp_return_file_data_operand()
+  def parse_alp_read_file_data_operation(self, s):
+    operand = self.parse_alp_file_data_request_operand(s)
+    return RequestFileData(operand=operand)
+
+  def parse_alp_file_data_request_operand(self, s):
+    offset = self.parse_offset(s)
+    length = s.read("uint:8")
+    return DataRequest(length=length, offset=offset)
+
+  def parse_alp_return_file_data_operation(self, s):
+    operand = self.parse_alp_return_file_data_operand(s)
     return ReturnFileData(operand=operand)
 
-  def parse_alp_return_file_data_operand(self):
-    offset = self.parse_offset()
-    length = self.s.read("uint:8")
-    data   = self.s.read("bytes:" + str(length))
+  def parse_alp_return_file_data_operand(self, s):
+    offset = self.parse_offset(s)
+    length = s.read("uint:8")
+    data   = s.read("bytes:" + str(length))
     return Data(offset=offset, data=map(ord,data))
 
-  def parse_offset(self):
-    id     = self.s.read("uint:8")
-    size   = self.s.read("uint:2") # + 1 = already read
+  def parse_offset(self, s):
+    id     = s.read("uint:8")
+    size   = s.read("uint:2") # + 1 = already read
     
-    offset = self.s.read("uint:" + str(6+(size * 8)))
+    offset = s.read("uint:" + str(6+(size * 8)))
     return Offset(id=id, size=size+1, offset=offset)

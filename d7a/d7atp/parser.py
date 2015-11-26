@@ -2,7 +2,7 @@
 from bitstring import ConstBitStream, ReadError
 from d7a.d7atp.frame import Frame
 from d7a.d7atp.control import Control
-
+from d7a.alp.parser import Parser as AlpParser
 
 class Parser(object):
 
@@ -35,5 +35,7 @@ class Parser(object):
     assert is_ack_recorded == False, "Not implemented yet"
     assert should_respond_only_if_act_return_template_not_empty == False, "Not implemented yet"
 
+    alp_payload = AlpParser().parse_alp_payload(bitstream)
+
     return Frame(control=control, dialog_id=dialog_id, transaction_id=transaction_id,
-                 timeout_template=timeout_template, ack_template= ack_template, payload=[])
+                 timeout_template=timeout_template, ack_template= ack_template, alp_payload=alp_payload)
