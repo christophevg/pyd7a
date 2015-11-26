@@ -2,6 +2,7 @@
 from bitstring import ConstBitStream, ReadError
 from d7a.dll.frame import Frame
 from d7a.dll.control import Control
+from d7a.d7anp.parser import Parser as D7anpParser
 
 class ParseError(Exception): pass
 
@@ -72,10 +73,10 @@ class Parser(object):
     payload_length = length - 4 # substract subnet, control, crc
     if control.is_target_address_set:
       if control.is_target_address_vid:
-        target_address = self.s.read("bytes:2")
+        target_address = map(ord, self.s.read("bytes:2"))
         payload_length = payload_length - 2
       else:
-        target_address = self.s.read("bytes:8")
+        target_address = map(ord, self.s.read("bytes:8"))
         payload_length = payload_length - 8
     else:
       target_address = []
@@ -85,7 +86,7 @@ class Parser(object):
       subnet=subnet,
       control=control,
       target_address=target_address,
-      payload=map(ord, self.s.read("bytes:" + str(payload_length))),
+      d7anp_frame=D7anpParser().parse(self.s, payload_length),
       crc16=self.s.read("uint:16")
     )
 
