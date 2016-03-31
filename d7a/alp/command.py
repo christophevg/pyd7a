@@ -3,33 +3,23 @@
 
 # class implementation of ALP commands
 
-# a D7A ALP Command consists of
-# - ALP Interface Configuration/Status
-# - ALP Payload
+# a D7A ALP Command consists of 1 or more ALP Actions
 
 from d7a.support.schema           import Validatable, Types
-
-from d7a.sp.status                import Status
-from d7a.sp.configuration         import Configuration
-from d7a.alp.payload              import Payload
+from d7a.alp.action              import Action
 
 class Command(Validatable):
   
   SCHEMA = [{
-    "interface": Types.OBJECT(Status),
-    "payload"  : Types.OBJECT(Payload)
-  },
-  {
-    "interface": Types.OBJECT(Configuration),
-    "payload"  : Types.OBJECT(Payload)
+    "actions": Types.LIST(Action)
   }]
 
-  def __init__(self, interface=None, payload=None):
-    self.interface = interface
-    self.payload   = payload
+
+  def __init__(self, actions=[]):
+    self.actions = actions
     super(Command, self).__init__()
 
   def __iter__(self):
-    yield chr(0xd7)
-    for byte in self.interface: yield byte
-    for byte in self.payload:   yield byte
+    for action in self.actions:
+      for byte in action:
+        yield byte

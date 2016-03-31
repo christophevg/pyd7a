@@ -42,7 +42,7 @@ class Parser(object):
     assert is_ack_recorded == False, "Not implemented yet"
     assert should_respond_only_if_act_return_template_not_empty == False, "Not implemented yet"
 
-    alp_payload = AlpParser().parse_alp_payload(bitstream, payload_length)
+    alp_command = AlpParser().parse(bitstream, payload_length)
 
     return Frame(control=control, dialog_id=dialog_id, transaction_id=transaction_id,
-                 timeout_template=timeout_template, ack_template= ack_template, alp_payload=alp_payload)
+                 timeout_template=timeout_template, ack_template= ack_template, alp_command=alp_command)

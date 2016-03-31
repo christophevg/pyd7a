@@ -33,15 +33,10 @@ class TestReturnFileData(unittest.TestCase):
   def test_command_generation(self):
     data = list(bytearray("testing 123"))
     cmd  = ReturnFileData.send_command(
-      addressee = 0x6666660000666666,
       file      = 0x66,
       data      = data
     )
     expected = [
-      0xd7,                                           # interface start
-      0x02, 0x02, 0x01, 0x03, 0x00, 0x00, 0x00,       # fifo config
-      0x20,                                           # universal addr = 8 bytes
-      0x66, 0x66, 0x66, 0x00, 0x00, 0x66, 0x66, 0x66, # ID
       0x20,                                           # action=32/ReturnFileData
       0x66,                                           # File ID
       0x00                                            # offset

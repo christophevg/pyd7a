@@ -50,8 +50,8 @@ class TestParser(unittest.TestCase):
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.should_respond_only_if_ack_return_template_not_empty)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.dialog_id, 0xe9)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.transaction_id, 0)
-    self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_payload.actions), 1)
-    alp_action = frame.d7anp_frame.d7atp_frame.alp_payload.actions[0]
+    self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_command.actions), 1)
+    alp_action = frame.d7anp_frame.d7atp_frame.alp_command.actions[0]
     self.assertEqual(type(alp_action.operation), RequestFileData)
     self.assertEqual(type(alp_action.operand), DataRequest)
     self.assertEqual(alp_action.operand.offset.id, 0)
@@ -104,8 +104,8 @@ class TestParser(unittest.TestCase):
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.should_respond_only_if_ack_return_template_not_empty)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.dialog_id, 0xe9)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.transaction_id, 0)
-    self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_payload.actions), 1)
-    alp_action = frame.d7anp_frame.d7atp_frame.alp_payload.actions[0]
+    self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_command.actions), 1)
+    alp_action = frame.d7anp_frame.d7atp_frame.alp_command.actions[0]
     self.assertEqual(type(alp_action.operation), ReturnFileData)
     self.assertEqual(type(alp_action.operand), Data)
     self.assertEqual(alp_action.operand.offset.id, 0)
