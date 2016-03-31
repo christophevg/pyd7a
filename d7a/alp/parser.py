@@ -101,7 +101,7 @@ class Parser(object):
 
   def parse_alp_interface_id(self, s):
     b = s.read("uint:8")
-    if b != 0x44 : raise ParseError("expected 0x44 ('D'), found {0}".format(b))
+    if b != 0xD7 : raise ParseError("expected 0xD7, found {0}".format(b))
 
   def parse_alp_interface_status(self, s):
     nls         = s.read("bool")
@@ -132,8 +132,11 @@ class Parser(object):
     id    = s.read("uint:"+str(l*8)) if l > 0 else None
     return Addressee(vid=vid, cl=cl, id=id)
 
-  def parse_alp_payload(self, s):
+  def parse_alp_payload(self, s, payload_length):
     # TODO: extend to multiple actions, only one supported right now
+    if payload_length == 0:
+      return Payload(actions=[])
+
     action = self.parse_alp_action(s)
     return Payload(actions=[action])
 
