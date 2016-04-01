@@ -33,6 +33,9 @@ from d7a.sp.session       import States
 class Status(Validatable):
 
   SCHEMA = [{
+    "channel_id"    : Types.BYTES(),
+    "rssi"       : Types.BYTES(),
+    "link_budget": Types.BYTE(),
     "nls"        : Types.BOOLEAN(),
     "missed"     : Types.BOOLEAN(),
     "retry"      : Types.BOOLEAN(),
@@ -43,9 +46,12 @@ class Status(Validatable):
     "addressee"  : Types.OBJECT(Addressee)
   }]
 
-  def __init__(self, nls=False, missed=False, retry=False, state=States.IDLE,
+  def __init__(self, channel_id=[], rssi=[], link_budget=0, nls=False, missed=False, retry=False, state=States.IDLE,
                      fifo_token=0, request_id=0, response_to=CT(),
                      addressee=Addressee()):
+    self.channel_id  = channel_id
+    self.rssi        = rssi
+    self.link_budget = link_budget
     self.nls         = nls
     self.missed      = missed
     self.retry       = retry

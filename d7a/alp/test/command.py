@@ -9,15 +9,9 @@ from d7a.alp.parser               import Parser
 
 from d7a.alp.command              import Command
 from d7a.alp.action               import Action
-from d7a.alp.payload              import Payload
-
 from d7a.alp.operations.responses import ReturnFileData
 from d7a.alp.operands.file        import Data, Offset
 
-from d7a.sp.session               import States
-from d7a.sp.configuration         import Configuration
-
-from d7a.tp.addressee             import Addressee
 
 class TestCommand(unittest.TestCase):
   def setUp(self):

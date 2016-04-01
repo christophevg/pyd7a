@@ -6,6 +6,7 @@
 import unittest
 
 from bitstring import ConstBitStream
+from d7a.alp.operands.interface_status import InterfaceStatusOperand
 
 from d7a.alp.parser import Parser
 from d7a.parse_error import ParseError
@@ -109,6 +110,43 @@ class TestParser(unittest.TestCase):
   #   self.assertEqual(cmds[0].actions[1].operation.op, 32)
   #   self.assertEqual(cmds[0].actions[1].operation.operand.length, 4)
   #   self.assertEqual(cmds[0].actions[0].group, False)
+
+  def test_interface_status_action_d7asp(self):
+    alp_action_bytes = [
+      51,                                             # action=51/Interface status
+      0xd7,                                           # interface ID
+      0x00, 0x00, 0x00,                               # channel_id
+      0x0a, 0x0a,                                     # RSSI
+      0x00,                                           # link budget
+      0x04,                                           # status
+      0xa5,                                           # fifo token
+      0x00,                                           # request ID
+      0x00,                                           # response timeout
+      0x20,                                           # addr control
+      0x24, 0x8a, 0xb6, 0x01, 0x51, 0xc7, 0x96, 0x6d, # addr
+    ]
+    cmd = self.parser.parse(ConstBitStream(bytes=alp_action_bytes), len(alp_action_bytes))
+
+    self.assertEqual(len(cmd.actions), 1)
+    self.assertEqual(cmd.actions[0].op, 51)
+    self.assertEqual(type(cmd.actions[0].operand), InterfaceStatusOperand)
+    self.assertEqual(cmd.actions[0].operand.interface_id, 0xD7)
+    self.assertEqual(cmd.actions[0].operand.interface_status.channel_id, [0, 0, 0]) # TODO
+    self.assertEqual(cmd.actions[0].operand.interface_status.rssi, [10, 10]) # TODO
+    self.assertEqual(cmd.actions[0].operand.interface_status.link_budget, 0) # TODO
+    self.assertEqual(cmd.actions[0].operand.interface_status.missed, False) # TODO
+    self.assertEqual(cmd.actions[0].operand.interface_status.nls, False) # TODO
+    self.assertEqual(cmd.actions[0].operand.interface_status.request_id, False) # TODO
+    self.assertEqual(cmd.actions[0].operand.interface_status.response_to.exp, 0)
+    self.assertEqual(cmd.actions[0].operand.interface_status.response_to.mant, 0)
+    self.assertEqual(cmd.actions[0].operand.interface_status.retry, False)
+    self.assertEqual(cmd.actions[0].operand.interface_status.state, 4) # TODO
+
+
+
+
+  def test_interface_status_action_unknown_interface(self):
+    self.assertFalse(True)
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestParser)
