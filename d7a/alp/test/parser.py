@@ -167,7 +167,7 @@ class TestParser(unittest.TestCase):
       51,                                             # action=51/Interface status
       0xd7,                                           # interface ID
       0x00, 0x00, 0x00,                               # channel_id
-      0x0a, 0x0a,                                     # RSSI
+      0xc4, 0xff,                                     # RSSI
       0x00,                                           # link budget
       0x04,                                           # status
       0xa5,                                           # fifo token
@@ -183,7 +183,7 @@ class TestParser(unittest.TestCase):
     self.assertEqual(type(cmd.actions[0].operand), InterfaceStatusOperand)
     self.assertEqual(cmd.actions[0].operand.interface_id, 0xD7)
     self.assertEqual(cmd.actions[0].operand.interface_status.channel_id, [0, 0, 0]) # TODO
-    self.assertEqual(cmd.actions[0].operand.interface_status.rssi, [10, 10]) # TODO
+    self.assertEqual(cmd.actions[0].operand.interface_status.rssi, -60)
     self.assertEqual(cmd.actions[0].operand.interface_status.link_budget, 0) # TODO
     self.assertEqual(cmd.actions[0].operand.interface_status.missed, False) # TODO
     self.assertEqual(cmd.actions[0].operand.interface_status.nls, False) # TODO

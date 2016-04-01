@@ -2,6 +2,7 @@
 # author: Christophe VG <contact@christophe.vg>
 
 # a parser for ALP commands
+import struct
 
 from d7a.alp.command              import Command
 from d7a.alp.action               import Action
@@ -80,7 +81,7 @@ class Parser(object):
 
   def parse_alp_interface_status_d7asp(self, s):
     channel_id  = map(ord, s.read("bytes:3")) # TODO parse
-    rssi        = map(ord, s.read("bytes:2")) # TODO parse
+    rssi        = struct.unpack("<h", s.read("bytes:2"))[0]
     link_budget = s.read("uint:8")  # TODO parse
     nls         = s.read("bool")
     missed      = s.read("bool")
