@@ -46,7 +46,7 @@ class Status(Validatable):
     "addressee"  : Types.OBJECT(Addressee)
   }]
 
-  def __init__(self, channel_id=[], rssi=[], link_budget=0, nls=False, missed=False, retry=False, state=States.IDLE,
+  def __init__(self, channel_id=[0,0,0], rssi=[0,0], link_budget=0, nls=False, missed=False, retry=False, state=States.IDLE,
                      fifo_token=0, request_id=0, response_to=CT(),
                      addressee=Addressee()):
     self.channel_id  = channel_id
@@ -63,6 +63,9 @@ class Status(Validatable):
     super(Status, self).__init__()
 
   def __iter__(self):
+    for byte in self.channel_id: yield byte
+    for byte in self.rssi: yield byte
+    yield self.link_budget
     byte = 0;
     if self.nls:    byte |= 1 << 7
     if self.missed: byte |= 1 << 6

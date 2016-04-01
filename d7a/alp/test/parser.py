@@ -15,6 +15,19 @@ from d7a.parse_error import ParseError
 class TestParser(unittest.TestCase):
   def setUp(self):
     self.parser = Parser()
+    self.interface_status_action = [
+      51,                                             # Interface Status action
+      0xD7,                                           # D7ASP interface
+      0, 0, 0,                                        # channel_id
+      0, 0,                                           # rssi
+      0,                                              # link budget
+      0,                                              # status
+      0,                                              # fifo token
+      0,                                              # request_id
+      0,                                              # response timeout
+      0                                               # addressee ctrl
+    ]
+
   
   def test_basic_valid_message(self):
     cmd_data = [
@@ -23,10 +36,46 @@ class TestParser(unittest.TestCase):
       0x00,                                           # offset
       0x04,                                           # length
       0x00, 0xf3, 0x00, 0x00                          # data
-    ]
+    ] + self.interface_status_action
+
     cmd = self.parser.parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
     self.assertEqual(cmd.actions[0].operation.op, 32)
     self.assertEqual(cmd.actions[0].operation.operand.length, 4)
+
+  def test_basic_valid_message_actions_swapped(self):
+    cmd_data = self.interface_status_action + [
+      0x20,                                           # action=32/ReturnFileData
+      0x40,                                           # File ID
+      0x00,                                           # offset
+      0x04,                                           # length
+      0x00, 0xf3, 0x00, 0x00                          # data
+    ]
+    cmd = self.parser.parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
+    self.assertEqual(cmd.actions[1].operation.op, 32)
+    self.assertEqual(cmd.actions[1].operation.operand.length, 4)
+
+  def test_command_without_interface_status(self):
+    cmd_data = [
+      0x20,                                           # action=32/ReturnFileData
+      0x40,                                           # File ID
+      0x00,                                           # offset
+      0x04,                                           # length
+      0x00, 0xf3, 0x00, 0x00                          # data
+      # missing interface status action!
+    ]
+    cmd = self.parser.parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
+    self.assertEqual(cmd.interface_status, None)
+
+  def test_command_with_multiple_interface_status_actions(self):
+    cmd_data = [
+      0x20,                                           # action=32/ReturnFileData
+      0x40,                                           # File ID
+      0x00,                                           # offset
+      0x04,                                           # length
+      0x00, 0xf3, 0x00, 0x00                          # data
+    ] + self.interface_status_action + self.interface_status_action # <- 2x interface_status!
+    with self.assertRaises(ParseError):
+      cmd = self.parser.parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
 
   def test_empty_data(self):
     alp_action_bytes = [
@@ -34,7 +83,7 @@ class TestParser(unittest.TestCase):
       0x40,
       0x00,
       0x00
-    ]
+    ] + self.interface_status_action
 
     cmd = self.parser.parse(ConstBitStream(bytes=alp_action_bytes), len(alp_action_bytes))
     self.assertEqual(cmd.actions[0].operation.op, 32)
@@ -59,8 +108,8 @@ class TestParser(unittest.TestCase):
       0x00, 0xf3, 0x00, 0x00,                         # data
     ]
 
-    cmd = self.parser.parse(ConstBitStream(bytes=(alp_action_bytes + alp_action_bytes)),
-                                                    2 * len(alp_action_bytes))
+    cmd_bytes = alp_action_bytes + alp_action_bytes + self.interface_status_action
+    cmd = self.parser.parse(ConstBitStream(bytes=cmd_bytes), len(cmd_bytes))
     self.assertEqual(cmd.actions[0].operation.op, 32)
     self.assertEqual(cmd.actions[0].operation.operand.length, 4)
     self.assertEqual(cmd.actions[1].operation.op, 32)
@@ -74,9 +123,11 @@ class TestParser(unittest.TestCase):
       0x04,                                           # length
       0x00, 0xf3, 0x00, 0x00                          # data
     ]
-    cmd = self.parser.parse(ConstBitStream(bytes=alp_action_bytes + alp_action_bytes), 2 * len(alp_action_bytes))
 
-    self.assertEqual(len(cmd.actions), 2)
+    cmd_bytes = alp_action_bytes + alp_action_bytes + self.interface_status_action
+    cmd = self.parser.parse(ConstBitStream(bytes=cmd_bytes), len(cmd_bytes))
+
+    self.assertEqual(len(cmd.actions), 3)
     self.assertEqual(cmd.actions[0].operation.op, 32)
     self.assertEqual(cmd.actions[0].operation.operand.length, 4)
     self.assertEqual(cmd.actions[1].operation.op, 32)

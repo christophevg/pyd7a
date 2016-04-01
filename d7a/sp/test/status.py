@@ -43,21 +43,17 @@ class TestStatus(unittest.TestCase):
     self.assertRaises(ValueError, bad, [], { "addressee":   CT()        })
   
   def test_byte_generation(self):
+    expected = [0 for x in xrange(11)]
     bytes = bytearray(Status())
-    self.assertEqual(len(bytes), 5)
-    self.assertEqual(bytes[0], int('00000000', 2)) # nls, missed, retry, state
-    self.assertEqual(bytes[1], int('00000000', 2)) # fifo_token
-    self.assertEqual(bytes[2], int('00000000', 2)) # request_id
-    self.assertEqual(bytes[3], int('00000000', 2)) # response_to CT
-    self.assertEqual(bytes[4], int('00000000', 2)) # addressee
+    self.assertEqual(len(bytes), 11)
+    for i in xrange(11):
+      self.assertEqual(expected[i], bytes[i])
 
     bytes = bytearray(Status(nls=True, missed=True, retry=True))
-    self.assertEqual(len(bytes), 5)
-    self.assertEqual(bytes[0], int('11100000', 2)) # nls, missed, retry, state
-    self.assertEqual(bytes[1], int('00000000', 2)) # fifo_token
-    self.assertEqual(bytes[2], int('00000000', 2)) # request_id
-    self.assertEqual(bytes[3], int('00000000', 2)) # response_to CT
-    self.assertEqual(bytes[4], int('00000000', 2)) # addressee
+    expected[6] = int('11100000', 2) # nls, missed, retry, state
+    self.assertEqual(len(bytes), 11)
+    for i in xrange(11):
+      self.assertEqual(expected[i], bytes[i])
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestStatus)
