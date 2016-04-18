@@ -90,7 +90,7 @@ class Parser(object):
     state       = s.read("uint:3")
     fifo_token  = s.read("uint:8")
     request_id  = s.read("uint:8")
-    response_to = self.parse_ct(s)
+    response_to = CT.parse(s)
     addressee   = self.parse_addressee(s)
 
     status = Status(channel_id=channel_id, rssi= rssi, link_budget=link_budget,
@@ -107,11 +107,6 @@ class Parser(object):
 
     offset = s.read("uint:" + str(6+(size * 8)))
     return Offset(id=id, size=size+1, offset=offset)
-
-  def parse_ct(self, s):
-    exp  = s.read("uint:3")
-    mant = s.read("uint:5")
-    return CT(exp=exp, mant=mant)
 
   def parse_addressee(self, s):
     _     = s.read("pad:2")

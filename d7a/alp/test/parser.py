@@ -196,8 +196,8 @@ class TestParser(unittest.TestCase):
 
 
 
-  def test_interface_status_action_unknown_interface(self):
-    self.assertFalse(True)
+  #def test_interface_status_action_unknown_interface(self):
+    # TODO 
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestParser)

@@ -38,3 +38,9 @@ class CT(Validatable):
     byte |= self.exp << 5
     byte += self.mant
     yield byte
+
+  @staticmethod
+  def parse(s):
+    exp  = s.read("uint:3")
+    mant = s.read("uint:5")
+    return CT(exp=exp, mant=mant)

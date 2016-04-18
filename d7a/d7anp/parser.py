@@ -3,10 +3,15 @@ from bitstring import ConstBitStream, ReadError
 from d7a.d7anp.frame import Frame
 from d7a.d7anp.control import Control
 from d7a.d7atp.parser import Parser as D7atpParser
+from d7a.types.ct import CT
+
 
 class Parser(object):
 
   def parse(self, bitstream, payload_length):
+    timeout = CT.parse(bitstream)
+    payload_length = payload_length - 1 # substract timeout
+
     control = Control(
       has_network_layer_security=bitstream.read("bool"),
       has_multi_hop=bitstream.read("bool"),
@@ -31,4 +36,4 @@ class Parser(object):
 
     #payload=map(ord,bitstream.read("bytes:" + str(payload_length)))
     d7atp_frame = D7atpParser().parse(bitstream, payload_length)
-    return Frame(control=control, origin_access_id=origin_access_id, d7atp_frame=d7atp_frame)
+    return Frame(timeout=timeout, control=control, origin_access_id=origin_access_id, d7atp_frame=d7atp_frame)

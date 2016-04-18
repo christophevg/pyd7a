@@ -10,16 +10,14 @@ class Frame(Validatable):
     "control": Types.OBJECT(Control),
     "dialog_id": Types.INTEGER(min=0, max=255),
     "transaction_id": Types.INTEGER(min=0, max=255),
-    "timeout_template": Types.OBJECT(CT, nullable=True),
     "ack_template": Types.OBJECT(nullable=True),
     "alp_command": Types.OBJECT(Command)
   }]
 
-  def __init__(self, control, dialog_id, transaction_id, timeout_template, ack_template, alp_command):
+  def __init__(self, control, dialog_id, transaction_id, ack_template, alp_command):
     self.control = control
     self.dialog_id = dialog_id
     self.transaction_id = transaction_id
-    self.timeout_template = timeout_template
     self.ack_template = ack_template
     self.alp_command = alp_command
     super(Frame, self).__init__()

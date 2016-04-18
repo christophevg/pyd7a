@@ -26,11 +26,6 @@ class Parser(object):
     transaction_id = bitstream.read("uint:8")
     payload_length = payload_length - 1
 
-    timeout_template = None
-    if has_timeout_template:
-      timeout_template = bitstream.read("uint:8")
-      payload_length = payload_length - 1
-
     ack_template = None
     if has_ack_template:
       transaction_id_start = bitstream.read("uint:8")
@@ -45,4 +40,4 @@ class Parser(object):
     alp_command = AlpParser().parse(bitstream, payload_length)
 
     return Frame(control=control, dialog_id=dialog_id, transaction_id=transaction_id,
-                 timeout_template=timeout_template, ack_template= ack_template, alp_command=alp_command)
+                 ack_template= ack_template, alp_command=alp_command)
