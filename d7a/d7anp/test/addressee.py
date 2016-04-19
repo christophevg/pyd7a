@@ -5,7 +5,7 @@
 
 import unittest
 
-from d7a.tp.addressee import Addressee
+from d7a.d7anp.addressee import Addressee
 
 class TestAddressee(unittest.TestCase):
   def test_default_constructor(self):

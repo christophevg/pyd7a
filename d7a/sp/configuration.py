@@ -26,7 +26,7 @@ from d7a.types.ct         import CT
 from d7a.sp.qos           import QoS
 from d7a.sp.session       import States
 
-from d7a.tp.addressee     import Addressee
+from d7a.d7anp.addressee import Addressee
 
 class Configuration(Validatable):
 

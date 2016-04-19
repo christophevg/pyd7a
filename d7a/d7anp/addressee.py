@@ -3,7 +3,7 @@
 
 # class implementation of addressee parameters
 
-# D7ATP Addressee (Parameters)
+# D7ANP Addressee (Parameters)
 #
 # ADDC  1 byte:
 #   b7-b6 RFU

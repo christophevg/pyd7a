@@ -9,7 +9,7 @@ class Frame(Validatable):
   SCHEMA = [{
     "timeout": Types.OBJECT(CT),
     "control": Types.OBJECT(Control),
-    "origin_access_id": Types.BYTES(), # TODO max size?
+    "origin_access_id": Types.BYTES(), # TODO refactor to use OriginAddressee (subclass of addressee containing control and access_id)
     "d7atp_frame": Types.OBJECT(D7atpFrame)
   }]
 

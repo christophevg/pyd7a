@@ -13,7 +13,7 @@ from d7a.alp.operations.requests  import RequestFileData
 from d7a.alp.operands.file        import Offset, Data, DataRequest
 from d7a.parse_error              import ParseError
 from d7a.sp.status import Status
-from d7a.tp.addressee import Addressee
+from d7a.d7anp.addressee import Addressee
 from d7a.types.ct import CT
 
 
