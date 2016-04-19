@@ -30,9 +30,12 @@ class Parser(object):
     if has_ack_template:
       transaction_id_start = bitstream.read("uint:8")
       payload_length = payload_length - 1
+      transaction_id_stop = bitstream.read("uint:8")
+      payload_length = payload_length - 1
       assert transaction_id_start == transaction_id, "Other case not implemented yet"
+      assert transaction_id_stop == transaction_id, "Other case not implemented yet"
       # TODO ack bitmap (for when transaction_id_start != transaction_id)
-      ack_template = [ transaction_id_start ]
+      ack_template = [ transaction_id_start, transaction_id_stop ]
 
     assert is_ack_recorded == False, "Not implemented yet"
     assert should_respond_only_if_act_return_template_not_empty == False, "Not implemented yet"

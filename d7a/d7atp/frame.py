@@ -10,7 +10,7 @@ class Frame(Validatable):
     "control": Types.OBJECT(Control),
     "dialog_id": Types.INTEGER(min=0, max=255),
     "transaction_id": Types.INTEGER(min=0, max=255),
-    "ack_template": Types.OBJECT(nullable=True),
+    "ack_template": Types.OBJECT(nullable=True), # TODO
     "alp_command": Types.OBJECT(Command)
   }]
 

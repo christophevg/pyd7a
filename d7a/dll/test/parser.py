@@ -6,6 +6,8 @@ from d7a.alp.operations.requests import RequestFileData
 from d7a.alp.operations.responses import ReturnFileData
 
 from d7a.dll.parser import Parser
+from d7a.support.Crc import calculate_crc
+
 
 class TestParser(unittest.TestCase):
   def setUp(self):
@@ -65,7 +67,7 @@ class TestParser(unittest.TestCase):
 
   # TODO tmp
   def test_read_id_response_frame(self):
-    frame_data = [ 0x26,  # length
+    frame_data = [ 0x27,  # length
                    0x00,  # subnet
                    0x80,  # dll control
                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, # target_address
@@ -75,17 +77,18 @@ class TestParser(unittest.TestCase):
                    0x41,  # D7ATP control
                    0xe9,  # dialog ID
                    0x00,  # transaction ID
-                   0x00,  # ACK template
+                   0x00, 0x00, # ACK template
                    0x20,  # ALP control (return file data operation)
                    0x00, 0x00, 0x08, # file data operand
                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, # UID
-                   0x1a, 0xbd # CRC
                    ]
+
+    frame_data = frame_data + calculate_crc(frame_data)
 
     (frames, info) = self.parser.parse(frame_data)
     self.assertEqual(len(frames), 1)
     frame = frames[0]
-    self.assertEqual(frame.length, 38)
+    self.assertEqual(frame.length, 39)
     self.assertEqual(frame.subnet, 0)
     self.assertEqual(frame.control.is_target_address_set, True)
     self.assertEqual(frame.control.is_target_address_vid, False)
@@ -114,5 +117,4 @@ class TestParser(unittest.TestCase):
     self.assertEqual(alp_action.operand.offset.id, 0)
     self.assertEqual(alp_action.operand.offset.offset, 0)
     self.assertEqual(alp_action.operand.length, 8)
-    hexstring = binascii.hexlify(bytearray(frame_data[:-2])).decode('hex') # TODO there must be an easier way...
-    self.assertEqual(frame.crc16, CRCCCITT(version='FFFF').calculate(hexstring))
+    self.assertEqual(frame.crc16, 36028)
