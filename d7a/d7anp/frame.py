@@ -19,3 +19,9 @@ class Frame(Validatable):
     self.origin_access_id = origin_access_id
     self.d7atp_frame = d7atp_frame # TODO
     super(Frame, self).__init__()
+
+  def __iter__(self):
+    for byte in self.timeout: yield byte
+    for byte in self.control: yield byte
+    for byte in self.origin_access_id: yield byte
+    for byte in self.d7atp_frame: yield byte

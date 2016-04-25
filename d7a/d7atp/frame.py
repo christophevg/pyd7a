@@ -21,3 +21,10 @@ class Frame(Validatable):
     self.ack_template = ack_template
     self.alp_command = alp_command
     super(Frame, self).__init__()
+
+  def __iter__(self):
+    for byte in self.control: yield byte
+    yield self.dialog_id
+    yield self.transaction_id
+    for byte in self.ack_template: yield byte
+    for byte in self.alp_command: yield byte

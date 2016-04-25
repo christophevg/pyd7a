@@ -9,15 +9,14 @@ class Parser(object):
   def parse(self, bitstream, payload_length):
     is_dialog_start = bitstream.read("bool")
     is_dialog_end = bitstream.read("bool")
-    has_timeout_template = bitstream.read("bool")
-    _=bitstream.read("pad:1"),
+    _=bitstream.read("pad:2"),
     is_ack_return_template_requested = bitstream.read("bool")
     should_respond_only_if_act_return_template_not_empty = bitstream.read("bool")
     is_ack_recorded = bitstream.read("bool")
     has_ack_template = bitstream.read("bool")
     payload_length = payload_length - 1 # subtract control byte
 
-    control = Control(is_dialog_start, is_dialog_end, has_timeout_template, is_ack_return_template_requested,
+    control = Control(is_dialog_start, is_dialog_end, is_ack_return_template_requested,
                       should_respond_only_if_act_return_template_not_empty, is_ack_recorded, has_ack_template)
 
     dialog_id = bitstream.read("uint:8")

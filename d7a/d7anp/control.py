@@ -18,3 +18,12 @@ class Control(Validatable):
     self.is_origin_access_id_vid = is_origin_access_id_vid
     self.origin_access_class = origin_access_class
     super(Control, self).__init__()
+
+  def __iter__(self):
+    byte = 0
+    if self.has_network_layer_security: byte |= 1 << 7
+    if self.has_multi_hop:  byte |= 1 << 6
+    if self.has_origin_access_id:  byte |= 1 << 5
+    if self.is_origin_access_id_vid:  byte |= 1 << 4
+    byte += self.origin_access_class
+    yield byte

@@ -36,9 +36,9 @@ class Frame(Validatable):
   #   crc = CRCCCITT().calculate(raw_data)
 
   def __iter__(self):
-    yield chr(self.length)
-    yield chr(self.subnet)
-    yield chr(self.control)
+    yield self.length
+    yield self.subnet
+    for byte in self.control: yield byte
     for byte in self.target_address: yield byte
-    for byte in self.payload: yield byte
-    for byte in self.crc16: yield byte
+    for byte in self.d7anp_frame: yield byte
+    yield self.crc16
