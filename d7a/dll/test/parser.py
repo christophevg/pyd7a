@@ -45,12 +45,11 @@ class TestParser(unittest.TestCase):
     self.assertFalse(frame.d7anp_frame.control.is_origin_access_id_vid)
     self.assertEqual(frame.d7anp_frame.control.origin_access_class, 0)
     self.assertEqual(frame.d7anp_frame.origin_access_id, [0, 0, 0, 0, 0, 0, 0, 1])
-    self.assertFalse(frame.d7anp_frame.d7atp_frame.control.has_ack_template)
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.is_ack_recorded)
     self.assertTrue(frame.d7anp_frame.d7atp_frame.control.is_ack_return_template_requested)
     self.assertTrue(frame.d7anp_frame.d7atp_frame.control.is_dialog_end)
     self.assertTrue(frame.d7anp_frame.d7atp_frame.control.is_dialog_start)
-    self.assertFalse(frame.d7anp_frame.d7atp_frame.control.should_respond_only_if_ack_return_template_not_empty)
+    self.assertFalse(frame.d7anp_frame.d7atp_frame.control.is_ack_not_void)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.dialog_id, 0xe9)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.transaction_id, 0)
     self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_command.actions), 1)
@@ -66,7 +65,7 @@ class TestParser(unittest.TestCase):
 
   # TODO tmp
   def test_read_id_response_frame(self):
-    frame_data = [ 0x27,  # length
+    frame_data = [ 0x25,  # length
                    0x00,  # subnet
                    0x80,  # dll control
                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, # target_address
@@ -76,7 +75,6 @@ class TestParser(unittest.TestCase):
                    0x41,  # D7ATP control
                    0xe9,  # dialog ID
                    0x00,  # transaction ID
-                   0x00, 0x00, # ACK template
                    0x20,  # ALP control (return file data operation)
                    0x00, 0x00, 0x08, # file data operand
                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, # UID
@@ -87,7 +85,7 @@ class TestParser(unittest.TestCase):
     (frames, info) = self.parser.parse(frame_data)
     self.assertEqual(len(frames), 1)
     frame = frames[0]
-    self.assertEqual(frame.length, 39)
+    self.assertEqual(frame.length, 37)
     self.assertEqual(frame.subnet, 0)
     self.assertEqual(frame.control.is_target_address_set, True)
     self.assertEqual(frame.control.is_target_address_vid, False)
@@ -100,12 +98,11 @@ class TestParser(unittest.TestCase):
     self.assertFalse(frame.d7anp_frame.control.is_origin_access_id_vid)
     self.assertEqual(frame.d7anp_frame.control.origin_access_class, 0)
     self.assertEqual(frame.d7anp_frame.origin_access_id, [0, 0, 0, 0, 0, 0, 0, 2])
-    self.assertTrue(frame.d7anp_frame.d7atp_frame.control.has_ack_template)
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.is_ack_recorded)
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.is_ack_return_template_requested)
     self.assertTrue(frame.d7anp_frame.d7atp_frame.control.is_dialog_end)
     self.assertFalse(frame.d7anp_frame.d7atp_frame.control.is_dialog_start)
-    self.assertFalse(frame.d7anp_frame.d7atp_frame.control.should_respond_only_if_ack_return_template_not_empty)
+    self.assertFalse(frame.d7anp_frame.d7atp_frame.control.is_ack_not_void)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.dialog_id, 0xe9)
     self.assertEqual(frame.d7anp_frame.d7atp_frame.transaction_id, 0)
     self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_command.actions), 1)
@@ -115,4 +112,3 @@ class TestParser(unittest.TestCase):
     self.assertEqual(alp_action.operand.offset.id, 0)
     self.assertEqual(alp_action.operand.offset.offset, 0)
     self.assertEqual(alp_action.operand.length, 8)
-    self.assertEqual(frame.crc16, 36028)
