@@ -44,6 +44,7 @@ class TestReturnFileData(unittest.TestCase):
     expected.append(len(data))
     expected.extend(data)
     bytes = bytearray(cmd)
+    self.assertEqual(len(expected), len(bytes))
     for i in xrange(len(expected)):
       self.assertEqual(bytes[i], expected[i])
 

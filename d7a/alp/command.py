@@ -4,31 +4,38 @@
 # class implementation of ALP commands
 
 # a D7A ALP Command consists of 1 or more ALP Actions
-from d7a.alp.operations.interface_status import InterfaceStatus
+from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.parse_error import ParseError
 
 from d7a.support.schema           import Validatable, Types
-from d7a.alp.action              import Action
+from d7a.alp.regular_action import RegularAction
+
 
 class Command(Validatable):
   
   SCHEMA = [{
-    "actions": Types.LIST(Action),
-    "interface_status": Types.OBJECT(InterfaceStatus, nullable=True) # can be null for example when parsing DLL frames
+    "actions": Types.LIST(RegularAction),
+    "interface_status": Types.OBJECT(StatusAction, nullable=True) # can be null for example when parsing DLL frames
   }]
 
 
   def __init__(self, actions=[]):
-    self.actions = actions
+    self.actions = []
     self.interface_status = None
-    for action in self.actions:
-      if type(action.operation) == InterfaceStatus:
+
+    for action in actions:
+      if type(action) == StatusAction and action.status_operand_extension == StatusActionOperandExtensions.INTERFACE_STATUS:
         if self.interface_status != None: raise ParseError("An ALP command can contain one and only one Interface Status action")
         self.interface_status = action.operation
+      if type(action) == RegularAction:
+        self.actions.append(action)
 
     super(Command, self).__init__()
 
   def __iter__(self):
+    for byte in self.interface_status:
+      yield byte
+
     for action in self.actions:
       for byte in action:
         yield byte

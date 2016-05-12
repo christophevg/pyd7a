@@ -26,54 +26,52 @@ import struct
 from d7a.support.schema   import Validatable, Types
 from d7a.types.ct         import CT
 from d7a.d7anp.addressee import Addressee
-from d7a.sp.session       import States
 
 class Status(Validatable):
 
   SCHEMA = [{
     "channel_id"    : Types.BYTES(),
-    "rssi"       : Types.INTEGER(),
+    "channel_index" : Types.INTEGER(),
+    "rx_level"      : Types.INTEGER(),
     "link_budget": Types.BYTE(),
     "nls"        : Types.BOOLEAN(),
     "missed"     : Types.BOOLEAN(),
     "retry"      : Types.BOOLEAN(),
-    "state"      : States.SCHEMA(),
+    "ucast"      : Types.BOOLEAN(),
     "fifo_token" : Types.BYTE(),
-    "request_id" : Types.BYTE(),
+    "seq_nr"     : Types.BYTE(),
     "response_to": Types.OBJECT(CT),
     "addressee"  : Types.OBJECT(Addressee)
   }]
 
-  def __init__(self, channel_id=[0,0,0], rssi=0, link_budget=0, nls=False, missed=False, retry=False, state=States.IDLE,
-                     fifo_token=0, request_id=0, response_to=CT(),
-                     addressee=Addressee()):
+  def __init__(self, channel_id, channel_index, rx_level, link_budget, nls, missed, retry, unicast,
+                     fifo_token, seq_nr, response_to, addressee):
     self.channel_id  = channel_id
-    self.rssi        = rssi
+    self.channel_index  = channel_index
+    self.rx_level    = rx_level
     self.link_budget = link_budget
     self.nls         = nls
     self.missed      = missed
     self.retry       = retry
-    self.state       = state
+    self.unicast       = unicast
     self.fifo_token  = fifo_token
-    self.request_id  = request_id
+    self.seq_nr  = seq_nr
     self.response_to = response_to
     self.addressee   = addressee
     super(Status, self).__init__()
 
   def __iter__(self):
     for byte in self.channel_id: yield byte
-    for byte in struct.pack("<h", self.rssi): yield byte
+    yield self.channel_index
+    yield self.rx_level
     yield self.link_budget
-    byte = 0;
+    byte = 0
     if self.nls:    byte |= 1 << 7
     if self.missed: byte |= 1 << 6
     if self.retry:  byte |= 1 << 5
-    # padding << 4 & << 3
-    if self.state:  byte += self.state  # 2 1 0
+    if self.ucast:  byte |= 1 << 4
     yield byte
-
     yield chr(self.fifo_token)
-    yield chr(self.request_id)
-
+    yield chr(self.seq_nr)
     for byte in self.response_to: yield byte
     for byte in self.addressee: yield byte

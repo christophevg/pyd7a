@@ -19,16 +19,12 @@ from d7a.alp.operations.nop       import NoOperation
 class Action(Validatable):
 
   SCHEMA = [{
-    "group"    : Types.BOOLEAN(),
-    "resp"     : Types.BOOLEAN(),
     "op"       : Types.BITS(6),
     "operation": Types.OBJECT(Operation),
     "operand"  : Types.OBJECT(nullable=True)  # there is no Operand base-class
   }]
 
-  def __init__(self, group=False, resp=False, operation=NoOperation()):
-    self.group     = group
-    self.resp      = resp
+  def __init__(self, operation=NoOperation()):
     self.operation = operation
     super(Action, self).__init__()
 
@@ -40,11 +36,3 @@ class Action(Validatable):
   def operand(self):
     return self.operation.operand
 
-  def __iter__(self):
-    byte = 0
-    if self.group: byte |= 1 << 7
-    if self.resp:  byte |= 1 << 6
-    byte += self.op
-    yield byte
-    
-    for byte in self.operation: yield byte

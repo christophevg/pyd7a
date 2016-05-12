@@ -4,14 +4,18 @@
 # unit tests for the D7 ALP command byte generation
 
 import unittest
+from d7a.alp.operations.status            import InterfaceStatus
 from d7a.alp.parser                       import Parser
 from d7a.alp.command                      import Command
 from d7a.alp.action                       import Action
 from d7a.alp.operations.responses         import ReturnFileData
 from d7a.alp.operands.file                import Data, Offset
-from d7a.sp.status                        import Status
+from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
+from d7a.d7anp.addressee import Addressee
+from d7a.sp.status                        import Status as D7ASpStatus
 from d7a.alp.operands.interface_status    import InterfaceStatusOperand
-from d7a.alp.operations.interface_status  import InterfaceStatus
+from d7a.types.ct import CT
+
 
 class TestCommand(unittest.TestCase):
   def setUp(self):
@@ -28,15 +32,27 @@ class TestCommand(unittest.TestCase):
               )
             )
           ),
-          Action(
+          StatusAction(
             operation=InterfaceStatus(
-              operand=InterfaceStatusOperand(
-                interface_id=0xD7,
-                interface_status=Status()
+            operand=InterfaceStatusOperand(
+              interface_id=0xD7,
+              interface_status=D7ASpStatus(
+                channel_id=[0,0,0],
+                channel_index=0,
+                rx_level=-70,
+                link_budget=80,
+                nls=False,
+                missed=False,
+                retry=False,
+                unicast=False,
+                fifo_token=200,
+                seq_nr=0,
+                response_to=CT(mant=20),
+                addressee=Addressee()
               )
             )
           )
-        ]
+        )]
     )
     expected = [
       0x20,                                           # action=32/ReturnFileData
@@ -77,7 +93,20 @@ class TestCommand(unittest.TestCase):
           operation=InterfaceStatus(
             operand=InterfaceStatusOperand(
               interface_id=0xD7,
-              interface_status=Status()
+              interface_status=Status(
+                channel_id=[0,0,0],
+                  channel_index=0,
+                  rx_level=-70,
+                  link_budget=80,
+                  nls=False,
+                  missed=False,
+                  retry=False,
+                  unicast=False,
+                  fifo_token=200,
+                  seq_nr=0,
+                  response_to=CT(mant=20),
+                  addressee=Addressee()
+              )
             )
           )
         )

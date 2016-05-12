@@ -3,7 +3,7 @@ from d7a.alp.operations.operation import Operation
 
 
 class InterfaceStatus(Operation):
-  def __init__(self, *args, **kwargs):
-    self.op     = 51
+  def __init__(self, operand):
+    self.op     = 34 # NOTE: 34 is shared with different status types depending on status operand extension bits
     self.operand_class = InterfaceStatusOperand
-    super(InterfaceStatus, self).__init__(*args, **kwargs)
+    super(InterfaceStatus, self).__init__(operand=operand)

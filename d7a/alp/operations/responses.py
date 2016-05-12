@@ -6,7 +6,7 @@
 from d7a.alp.operations.operation import Operation
 
 from d7a.alp.command              import Command
-from d7a.alp.action               import Action
+from d7a.alp.regular_action       import RegularAction
 from d7a.alp.operands.file        import Data, Offset
 
 class ReturnFileData(Operation):
@@ -19,7 +19,7 @@ class ReturnFileData(Operation):
   def send_command(file, data):
     return Command(
       actions=[
-        Action(
+        RegularAction(
           operation=ReturnFileData(
             operand=Data(
               data=data,
