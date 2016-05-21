@@ -63,7 +63,7 @@ class TestAddressee(unittest.TestCase):
   def test_invalid_id_type(self):
     def bad(): addr = Addressee(id_type=0)
     self.assertRaises(ValueError, bad)
-    
+
   # byte generation
   
   def test_byte_generation(self):

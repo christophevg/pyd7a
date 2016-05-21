@@ -6,14 +6,15 @@
 import unittest
 
 from d7a.alp.action         import Action
-from d7a.alp.operations.nop import NoOperation
+from d7a.alp.regular_action import RegularAction
+
 
 class TestAction(unittest.TestCase):
   def test_default_action_constructor(self):
     Action()
   
   def test_action_construction_switches(self):
-    Action(group=True, resp=True)
+    RegularAction(group=True, resp=True)
 
   def test_default_nop_action_operand(self):
     a = Action()
@@ -24,11 +25,11 @@ class TestAction(unittest.TestCase):
     self.assertRaises(ValueError, bad)
 
   def test_byte_generation(self):
-    bytes = bytearray(Action())
+    bytes = bytearray(RegularAction())
     self.assertEqual(len(bytes), 1)
     self.assertEqual(bytes[0], int('00000000', 2))
 
-    bytes = bytearray(Action(group=True, resp=True))
+    bytes = bytearray(RegularAction(group=True, resp=True))
     self.assertEqual(len(bytes), 1)
     self.assertEqual(bytes[0], int('11000000', 2))
 

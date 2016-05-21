@@ -30,9 +30,9 @@ from d7a.d7anp.addressee import Addressee
 class Status(Validatable):
 
   SCHEMA = [{
-    "channel_id"    : Types.BYTES(),
+    "channel_header"    : Types.BYTE(), # TODO parse
     "channel_index" : Types.INTEGER(),
-    "rx_level"      : Types.INTEGER(),
+    "rx_level"      : Types.BYTE(),
     "link_budget": Types.BYTE(),
     "nls"        : Types.BOOLEAN(),
     "missed"     : Types.BOOLEAN(),
@@ -44,9 +44,9 @@ class Status(Validatable):
     "addressee"  : Types.OBJECT(Addressee)
   }]
 
-  def __init__(self, channel_id, channel_index, rx_level, link_budget, nls, missed, retry, unicast,
+  def __init__(self, channel_header, channel_index, rx_level, link_budget, nls, missed, retry, unicast,
                      fifo_token, seq_nr, response_to, addressee):
-    self.channel_id  = channel_id
+    self.channel_header  = channel_header
     self.channel_index  = channel_index
     self.rx_level    = rx_level
     self.link_budget = link_budget
@@ -61,15 +61,15 @@ class Status(Validatable):
     super(Status, self).__init__()
 
   def __iter__(self):
-    for byte in self.channel_id: yield byte
-    yield self.channel_index
+    yield self.channel_header
+    for byte in bytearray(struct.pack(">h", self.channel_index)): yield byte
     yield self.rx_level
     yield self.link_budget
     byte = 0
     if self.nls:    byte |= 1 << 7
     if self.missed: byte |= 1 << 6
     if self.retry:  byte |= 1 << 5
-    if self.ucast:  byte |= 1 << 4
+    if self.unicast:  byte |= 1 << 4
     yield byte
     yield chr(self.fifo_token)
     yield chr(self.seq_nr)

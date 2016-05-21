@@ -22,15 +22,14 @@ class StatusAction(Action):
     "operand"  : Types.OBJECT(nullable=True)  # there is no Operand base-class
   }]
 
-  def __init__(self, status_operand_extension, operation, operand):
+  def __init__(self, status_operand_extension, operation):
     self.status_operand_extension = status_operand_extension
-    self.operand = operand
     self.operation = operation
-    super(StatusAction, self).__init__()
+    super(StatusAction, self).__init__(operation=operation)
 
   def __iter__(self):
     byte = 0
-    if self.resp:  byte |= self.status_operand_extension << 6
+    byte |= self.status_operand_extension << 6
     byte += self.op
     yield byte
 
