@@ -28,19 +28,19 @@ class Addressee(Validatable):
      {
        # broadcast
        "id_type"   : Types.INTEGER([IdType.BCAST]),
-       "cl"        : Types.BITS(4),
+       "access_class"        : Types.BITS(4),
        "id_length" : Types.INTEGER([0]),
        "id"        : Types.INTEGER([None])
      },{
        # virtual
       "id_type"   : Types.INTEGER([IdType.VID]),
-       "cl"        : Types.BITS(4),
+       "access_class"        : Types.BITS(4),
        "id_length" : Types.INTEGER([2]),
        "id"        : Types.INTEGER(min=0, max=0xFFFF)
      },{
        # unicast
       "id_type"   : Types.INTEGER([IdType.UID]),
-       "cl"        : Types.BITS(4),
+       "access_class"        : Types.BITS(4),
        "id_length" : Types.INTEGER([8]),
        "id"        : Types.INTEGER(min=0, max=0xFFFFFFFFFFFFFFFF)
      }
@@ -56,10 +56,10 @@ class Addressee(Validatable):
 #    }
 #  ]
 
-  def __init__(self, cl=0, id_type=IdType.BCAST, id=None):
+  def __init__(self, access_class=0, id_type=IdType.BCAST, id=None):
     self.id_type = id_type
-    self.cl    = cl
-    self.id    = id
+    self.access_class = access_class
+    self.id = id
     super(Addressee, self).__init__()
 
   @property
@@ -79,16 +79,15 @@ class Addressee(Validatable):
     cl    = s.read("uint:4")
     l     = Addressee.length_for(id_type)
     id    = s.read("uint:"+str(l*8)) if l > 0 else 0
-    return Addressee(id_type=id_type, cl=cl, id=id)
+    return Addressee(id_type=id_type, access_class=cl, id=id)
 
   def __iter__(self):
     byte = 0
     # pad 2 << 7 << 6
-    if self.hasid: byte |= 1 << 5
-    if self.vid:   byte |= 1 << 4
-    byte += self.cl
+    byte |= self.id_type << 4
+    byte += self.access_class
     yield byte
     
-    if self.id_length:
+    if self.id_length > 0:
       id = bytearray(struct.pack(">Q", self.id))[8-self.id_length:]
       for byte in id: yield byte
