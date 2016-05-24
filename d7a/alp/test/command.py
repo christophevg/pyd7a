@@ -63,9 +63,9 @@ class TestCommand(unittest.TestCase):
       0,                                              # channel header
       0, 16,                                          # channel_id
       70,                                             # rxlevel (- dBm)
-      80,                                              # link budget
+      80,                                             # link budget
       0,                                              # status
-      200,                                              # fifo token
+      200,                                            # fifo token
       0,                                              # seq
       20,                                             # response timeout
       16,                                             # addressee ctrl (BCAST)
@@ -78,63 +78,6 @@ class TestCommand(unittest.TestCase):
     ]
     bytes = bytearray(cmd)
     self.assertEqual(len(bytes), len(expected))
-    for i in xrange(len(expected)):
-      self.assertEqual(bytes[i], expected[i])
-
-
-  def test_simple_send_return_file_data_command(self):
-    cmd = Command(
-      actions=[
-        RegularAction(
-          operation=ReturnFileData(
-            operand=Data(
-              data=list(bytearray("Hello world")),
-              offset=Offset(id=0x51)
-            )
-          )
-        ),
-        StatusAction(
-          operation=InterfaceStatus(
-            operand=InterfaceStatusOperand(
-              interface_id=0xD7,
-              interface_status=D7ASpStatus(
-                channel_id=[0,0,0],
-                  channel_index=0,
-                  rx_level=-70,
-                  link_budget=80,
-                  nls=False,
-                  missed=False,
-                  retry=False,
-                  unicast=False,
-                  fifo_token=200,
-                  seq_nr=0,
-                  response_to=CT(mant=20),
-                  addressee=Addressee()
-              )
-            )
-          )
-        )
-      ]
-    )
-    expected = [
-      0x20,                                           # action=32/ReturnFileData
-      0x51,                                           # File ID
-      0x00,                                           # offset
-      0x0b,                                           # length
-      0x48, 0x65, 0x6c, 0x6c, 0x6f,                   # Hello
-      0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64,             # World
-      51,                                             # Interface Status action
-      0xD7,                                           # D7ASP interface
-      0, 0, 0,                                        # channel_id
-      0, 0,                                           # rssi
-      0,                                              # link budget
-      0,                                              # status
-      0,                                              # fifo token
-      0,                                              # request_id
-      0,                                              # response timeout
-      0                                               # addressee ctrl
-    ]
-    bytes = bytearray(cmd)
     for i in xrange(len(expected)):
       self.assertEqual(bytes[i], expected[i])
 

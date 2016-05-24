@@ -5,6 +5,8 @@
 import struct
 
 from d7a.alp.command              import Command
+from d7a.alp.operands.interface_status import InterfaceStatusOperand
+from d7a.alp.operations.status import InterfaceStatus
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.alp.regular_action import RegularAction
 from d7a.alp.operations.responses import ReturnFileData
@@ -28,7 +30,8 @@ class Parser(object):
         actions.append(action)
         alp_bytes_parsed = alp_bytes_parsed + (s.bytepos - startpos)
 
-    return Command(actions = actions)
+    cmd = Command(actions = actions)
+    return cmd
 
   def parse_alp_action(self, s):
     # meaning of first 2 bits depend on action opcode
@@ -90,8 +93,8 @@ class Parser(object):
     pass # no interface status defined for host interface
 
   def parse_alp_interface_status_d7asp(self, s):
-    channel_id = map(ord, s.read("bytes:2")) # TODO parse
-    channel_index = s.read("uint:8")
+    channel_header = s.read("uint:8") # TODO parse
+    channel_index = struct.unpack("<h", s.read("bytes:2"))[0]
     rx_level = s.read("int:8")
     link_budget = s.read("uint:8")
     nls         = s.read("bool")
@@ -104,7 +107,7 @@ class Parser(object):
     response_to = CT.parse(s)
     addressee   = Addressee.parse(s)
 
-    status = Status(channel_id=channel_id, channel_index=channel_index, rx_level=rx_level, link_budget=link_budget,
+    status = Status(channel_header=channel_header, channel_index=channel_index, rx_level=rx_level, link_budget=link_budget,
                   nls=nls, missed=missed, retry=retry, unicast=unicast,
                   fifo_token=fifo_token, seq_nr=seq_nr,
                   response_to=response_to, addressee=addressee)

@@ -78,7 +78,7 @@ class Addressee(Validatable):
     id_type = s.read("uint:2")
     cl    = s.read("uint:4")
     l     = Addressee.length_for(id_type)
-    id    = s.read("uint:"+str(l*8)) if l > 0 else 0
+    id    = s.read("uint:"+str(l*8)) if l > 0 else None
     return Addressee(id_type=id_type, access_class=cl, id=id)
 
   def __iter__(self):

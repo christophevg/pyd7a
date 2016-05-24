@@ -19,10 +19,9 @@ class Command(Validatable):
     "interface_status": Types.OBJECT(StatusAction, nullable=True) # can be null for example when parsing DLL frames
   }]
 
-  actions = []
-
   def __init__(self, actions=[]):
     self.interface_status = None
+    self.actions = []
 
     for action in actions:
       if type(action) == StatusAction and action.status_operand_extension == StatusActionOperandExtensions.INTERFACE_STATUS:
