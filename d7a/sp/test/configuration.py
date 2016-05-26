@@ -4,6 +4,7 @@
 # unit tests for the D7A SP (FIFO) Configuration
 
 import unittest
+from d7a.sp.session import States
 
 from d7a.types.ct         import CT
 from d7a.sp.qos           import QoS
@@ -46,7 +47,7 @@ class TestConfiguration(unittest.TestCase):
     self.assertEquals(bytes[4], int( '00000000', 2)) # qos
     self.assertEquals(bytes[5], int( '00000000', 2)) # dorm_to (CT)
     self.assertEquals(bytes[6], int( '00000000', 2)) # start_id
-    self.assertEquals(bytes[7], int( '00000000', 2)) # addressee
+    self.assertEquals(bytes[7], int( '00010000', 2)) # addressee control BCAST
 
     bytes = bytearray(Configuration(
       nls         = True,
