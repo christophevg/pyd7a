@@ -4,7 +4,6 @@
 # class implementation of ALP commands
 
 # a D7A ALP Command consists of 1 or more ALP Actions
-from d7a.alp.operands.interface_status import InterfaceStatusOperand
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.parse_error import ParseError
 

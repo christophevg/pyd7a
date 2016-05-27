@@ -92,3 +92,6 @@ class DataRequest(Validatable):
     self.length = length
     super(DataRequest, self).__init__()
 
+  def __iter__(self):
+    for byte in self.offset: yield byte
+    yield chr(self.length)

@@ -2,7 +2,7 @@ import unittest
 import binascii
 from PyCRC.CRCCCITT import CRCCCITT
 from d7a.alp.operands.file import DataRequest, Data
-from d7a.alp.operations.requests import RequestFileData
+from d7a.alp.operations.requests import ReadFileData
 from d7a.alp.operations.responses import ReturnFileData
 
 from d7a.dll.parser import Parser
@@ -54,7 +54,7 @@ class TestParser(unittest.TestCase):
     self.assertEqual(frame.d7anp_frame.d7atp_frame.transaction_id, 0)
     self.assertEqual(len(frame.d7anp_frame.d7atp_frame.alp_command.actions), 1)
     alp_action = frame.d7anp_frame.d7atp_frame.alp_command.actions[0]
-    self.assertEqual(type(alp_action.operation), RequestFileData)
+    self.assertEqual(type(alp_action.operation), ReadFileData)
     self.assertEqual(type(alp_action.operand), DataRequest)
     self.assertEqual(alp_action.operand.offset.id, 0)
     self.assertEqual(alp_action.operand.offset.offset, 0)

@@ -10,7 +10,7 @@ from d7a.alp.operations.status import InterfaceStatus
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.alp.regular_action import RegularAction
 from d7a.alp.operations.responses import ReturnFileData
-from d7a.alp.operations.requests  import RequestFileData
+from d7a.alp.operations.requests  import ReadFileData
 from d7a.alp.operands.file        import Offset, Data, DataRequest
 from d7a.parse_error              import ParseError
 from d7a.sp.status import Status
@@ -51,7 +51,7 @@ class Parser(object):
     operand = self.parse_alp_file_data_request_operand(s)
     return RegularAction(group=b7,
                   resp=b6,
-                  operation=RequestFileData(operand=operand))
+                  operation=ReadFileData(operand=operand))
 
   def parse_alp_file_data_request_operand(self, s):
     offset = self.parse_offset(s)
