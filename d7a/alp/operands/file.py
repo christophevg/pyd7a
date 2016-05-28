@@ -53,6 +53,9 @@ class Offset(Validatable):
       yield byte
       for byte in offset[1:]: yield byte
 
+  def __str__(self):
+    return "file-id={}, size={}, offset={}".format(self.id, self.size, self.offset)
+
 class Data(Validatable):
 
   SCHEMA = [{
@@ -80,6 +83,10 @@ class Data(Validatable):
     yield chr(self.length)
     for byte in self.data: yield chr(byte)
 
+  def __str__(self):
+    return "{}, length={}, data={}".format(self.offset, self.length, str(bytearray(self.data)))
+
+
 class DataRequest(Validatable):
 
   SCHEMA = [{
@@ -95,3 +102,6 @@ class DataRequest(Validatable):
   def __iter__(self):
     for byte in self.offset: yield byte
     yield chr(self.length)
+
+  def __str__(self):
+    return "{}, length={}".format(self.offset, self.length)

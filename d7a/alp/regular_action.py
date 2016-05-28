@@ -28,3 +28,7 @@ class RegularAction(Action):
     yield byte
 
     for byte in self.operation: yield byte
+
+  def __str__(self):
+    output = "op={}, operand={}({})".format(type(self.operation).__name__, type(self.operand).__name__, self.operand)
+    return output

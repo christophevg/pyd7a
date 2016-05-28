@@ -39,3 +39,10 @@ class Command(Validatable):
     for action in self.actions:
       for byte in action:
         yield byte
+
+  def __str__(self):
+    output = "Command actions:\n"
+    for action in self.actions:
+      output = output + "\taction: {}".format(action)
+
+    return output
