@@ -5,8 +5,9 @@
 
 # a D7A ALP Command consists of 1 or more ALP Actions
 from d7a.alp.interface import InterfaceType
-from d7a.alp.operands.file import Offset, DataRequest
+from d7a.alp.operands.file import Offset, DataRequest, Data
 from d7a.alp.operations.requests import ReadFileData
+from d7a.alp.operations.write_operations import WriteFileData
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.parse_error import ParseError
 
@@ -43,6 +44,20 @@ class Command(Validatable):
           operand=DataRequest(
             offset=Offset(id=file_id, offset=offset), # TODO offset size
             length=length
+          )
+        )
+      )
+    ])
+
+  @classmethod
+  def create_with_write_file_action(cls, file_id, data=[], offset=0, interface_type=InterfaceType.HOST):
+    # TODO forward action containing interface config
+    return Command(actions=[
+      RegularAction(
+        operation=WriteFileData(
+          operand=Data(
+            offset=Offset(id=file_id, offset=offset), # TODO offset size
+            data=data
           )
         )
       )

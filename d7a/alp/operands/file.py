@@ -84,7 +84,7 @@ class Data(Validatable):
     for byte in self.data: yield chr(byte)
 
   def __str__(self):
-    return "{}, length={}, data={}".format(self.offset, self.length, str(bytearray(self.data)))
+    return "{}, length={}, data={}".format(self.offset, self.length, self.data)
 
 
 class DataRequest(Validatable):
