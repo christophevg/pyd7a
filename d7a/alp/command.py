@@ -4,6 +4,9 @@
 # class implementation of ALP commands
 
 # a D7A ALP Command consists of 1 or more ALP Actions
+from d7a.alp.interface import InterfaceType
+from d7a.alp.operands.file import Offset, DataRequest
+from d7a.alp.operations.requests import ReadFileData
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.parse_error import ParseError
 
@@ -30,6 +33,20 @@ class Command(Validatable):
         self.actions.append(action)
 
     super(Command, self).__init__()
+
+  @classmethod
+  def create_with_read_file_action(cls, file_id, length, offset=0, interface_type=InterfaceType.HOST):
+    # TODO forward action containing interface config
+    return Command(actions=[
+      RegularAction(
+        operation=ReadFileData(
+          operand=DataRequest(
+            offset=Offset(id=file_id, offset=offset), # TODO offset size
+            length=length
+          )
+        )
+      )
+    ])
 
   def __iter__(self):
     if self.interface_status is not None:
