@@ -17,3 +17,6 @@ class InterfaceStatusOperand(Validatable):
   def __iter__(self):
     yield self.interface_id
     for byte in self.interface_status: yield byte
+
+  def __str__(self):
+    return "interface-id={}, status={}".format(self.interface_id, self.interface_status.__dict__)

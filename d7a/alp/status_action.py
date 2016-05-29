@@ -34,3 +34,6 @@ class StatusAction(Action):
     yield byte
 
     for byte in self.operation: yield byte
+
+  def __str__(self):
+    return "{}".format(self.operand)

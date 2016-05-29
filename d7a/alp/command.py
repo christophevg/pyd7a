@@ -75,6 +75,8 @@ class Command(Validatable):
   def __str__(self):
     output = "Command actions:\n"
     for action in self.actions:
-      output = output + "\taction: {}".format(action)
+      output = output + "\taction: {}\n".format(action)
 
+    if self.interface_status is not None:
+      output = output + "interface status: {}\n".format(self.interface_status)
     return output

@@ -36,3 +36,6 @@ class Action(Validatable):
   def operand(self):
     return self.operation.operand
 
+  def __str__(self):
+    output = "op={}, operand={}({})".format(type(self.operation).__name__, type(self.operand).__name__, self.operand)
+    return output
