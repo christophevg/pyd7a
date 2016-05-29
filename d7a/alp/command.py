@@ -35,8 +35,8 @@ class Command(Validatable):
 
     super(Command, self).__init__()
 
-  @classmethod
-  def create_with_read_file_action(cls, file_id, length, offset=0, interface_type=InterfaceType.HOST):
+  @staticmethod
+  def create_with_read_file_action(file_id, length, offset=0, interface_type=InterfaceType.HOST):
     # TODO forward action containing interface config
     return Command(actions=[
       RegularAction(
@@ -49,8 +49,8 @@ class Command(Validatable):
       )
     ])
 
-  @classmethod
-  def create_with_write_file_action(cls, file_id, data=[], offset=0, interface_type=InterfaceType.HOST):
+  @staticmethod
+  def create_with_write_file_action(file_id, data=[], offset=0, interface_type=InterfaceType.HOST):
     # TODO forward action containing interface config
     return Command(actions=[
       RegularAction(

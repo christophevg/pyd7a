@@ -21,6 +21,14 @@ class Parser(object):
     self.buffer.extend(msg)
     return self.parse_buffer()
 
+  @staticmethod
+  def build_serial_frame(command):
+    buffer = bytearray([ 'A', 'T', '$', 'D', 0xC0, 0 ])
+    alp_command_bytes = bytearray(command)
+    buffer.append(len(alp_command_bytes))
+    buffer = buffer + alp_command_bytes
+    return buffer
+
   def parse_buffer(self):
     parsed = 0
     cmds   = []
