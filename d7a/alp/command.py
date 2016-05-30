@@ -6,10 +6,13 @@
 # a D7A ALP Command consists of 1 or more ALP Actions
 from d7a.alp.interface import InterfaceType
 from d7a.alp.operands.file import Offset, DataRequest, Data
+from d7a.alp.operands.interface_configuration import InterfaceConfiguration
+from d7a.alp.operations.forward import Forward
 from d7a.alp.operations.requests import ReadFileData
 from d7a.alp.operations.write_operations import WriteFileData
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.parse_error import ParseError
+from d7a.sp.configuration import Configuration
 
 from d7a.support.schema           import Validatable, Types
 from d7a.alp.regular_action import RegularAction
@@ -37,8 +40,23 @@ class Command(Validatable):
 
   @staticmethod
   def create_with_read_file_action(file_id, length, offset=0, interface_type=InterfaceType.HOST):
-    # TODO forward action containing interface config
-    return Command(actions=[
+    # default to host interface, when D7ASP interface is used prepend with Forward action
+    actions = []
+    if interface_type == InterfaceType.D7ASP:
+      actions.append(
+        RegularAction(
+          operation=Forward(
+            operand=InterfaceConfiguration(
+              interface_id=InterfaceType.D7ASP,
+              interface_configuration=Configuration(
+                # TODO
+              )
+            )
+          )
+        )
+      )
+
+    actions.append(
       RegularAction(
         operation=ReadFileData(
           operand=DataRequest(
@@ -47,12 +65,29 @@ class Command(Validatable):
           )
         )
       )
-    ])
+    )
+
+    return Command(actions=actions)
 
   @staticmethod
   def create_with_write_file_action(file_id, data=[], offset=0, interface_type=InterfaceType.HOST):
-    # TODO forward action containing interface config
-    return Command(actions=[
+    # default to host interface, when D7ASP interface is used prepend with Forward action
+    actions = []
+    if interface_type == InterfaceType.D7ASP:
+      actions.append(
+        RegularAction(
+          operation=Forward(
+            operand=InterfaceConfiguration(
+              interface_id=InterfaceType.D7ASP,
+              interface_configuration=Configuration(
+                # TODO
+              )
+            )
+          )
+        )
+      )
+
+    actions.append(
       RegularAction(
         operation=WriteFileData(
           operand=Data(
@@ -61,7 +96,9 @@ class Command(Validatable):
           )
         )
       )
-    ])
+    )
+
+    return Command(actions=actions)
 
   def __iter__(self):
     if self.interface_status is not None:
