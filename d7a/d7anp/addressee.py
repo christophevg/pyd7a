@@ -91,3 +91,6 @@ class Addressee(Validatable):
     if self.id_length > 0:
       id = bytearray(struct.pack(">Q", self.id))[8-self.id_length:]
       for byte in id: yield byte
+
+  def __str__(self):
+    return str(self.as_dict())

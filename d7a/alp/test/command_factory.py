@@ -1,4 +1,5 @@
 import unittest
+import binascii
 
 from d7a.alp.command import Command
 from d7a.alp.interface import InterfaceType

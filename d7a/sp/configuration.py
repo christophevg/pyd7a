@@ -30,3 +30,6 @@ class Configuration(Validatable):
     for byte in self.qos: yield byte
     for byte in self.dorm_to: yield byte
     for byte in self.addressee: yield byte
+
+  def __str__(self):
+    return str(self.as_dict())

@@ -37,3 +37,6 @@ class QoS(Validatable):
     # rfu
     byte += self.resp_mod
     yield byte
+
+  def __str__(self):
+    return str(self.as_dict())
