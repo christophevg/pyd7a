@@ -3,6 +3,7 @@
 
 # class implementation of (FIFO) configuration
 
+# TODO can be removed?
 class States(object):
   IDLE    = 0  # Inactive Session
   DORMANT = 1  # The group of Requests needs to be executed within a timeout 
