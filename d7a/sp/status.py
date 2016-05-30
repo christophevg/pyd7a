@@ -34,6 +34,7 @@ class Status(Validatable):
     "channel_index" : Types.INTEGER(),
     "rx_level"      : Types.BYTE(),
     "link_budget": Types.BYTE(),
+    "target_rx_level": Types.BYTE(),
     "nls"        : Types.BOOLEAN(),
     "missed"     : Types.BOOLEAN(),
     "retry"      : Types.BOOLEAN(),
@@ -44,12 +45,13 @@ class Status(Validatable):
     "addressee"  : Types.OBJECT(Addressee)
   }]
 
-  def __init__(self, channel_header, channel_index, rx_level, link_budget, nls, missed, retry, unicast,
+  def __init__(self, channel_header, channel_index, rx_level, link_budget, target_rx_level, nls, missed, retry, unicast,
                      fifo_token, seq_nr, response_to, addressee):
     self.channel_header  = channel_header
     self.channel_index  = channel_index
     self.rx_level    = rx_level
     self.link_budget = link_budget
+    self.target_rx_level = target_rx_level
     self.nls         = nls
     self.missed      = missed
     self.retry       = retry
@@ -65,6 +67,7 @@ class Status(Validatable):
     for byte in bytearray(struct.pack("<h", self.channel_index)): yield byte
     yield self.rx_level
     yield self.link_budget
+    yield self.target_rx_level
     byte = 0
     if self.nls:    byte |= 1 << 7
     if self.missed: byte |= 1 << 6

@@ -97,6 +97,7 @@ class Parser(object):
     channel_index = struct.unpack("<h", s.read("bytes:2"))[0]
     rx_level = s.read("int:8")
     link_budget = s.read("uint:8")
+    target_rx_level = s.read("uint:8")
     nls         = s.read("bool")
     missed      = s.read("bool")
     retry       = s.read("bool")
@@ -108,7 +109,7 @@ class Parser(object):
     addressee   = Addressee.parse(s)
 
     status = Status(channel_header=channel_header, channel_index=channel_index, rx_level=rx_level, link_budget=link_budget,
-                  nls=nls, missed=missed, retry=retry, unicast=unicast,
+                  target_rx_level=target_rx_level, nls=nls, missed=missed, retry=retry, unicast=unicast,
                   fifo_token=fifo_token, seq_nr=seq_nr,
                   response_to=response_to, addressee=addressee)
 

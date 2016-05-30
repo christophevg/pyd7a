@@ -43,6 +43,7 @@ class TestCommand(unittest.TestCase):
                   channel_index=16,
                   rx_level=70,
                   link_budget=80,
+                  target_rx_level=80,
                   nls=False,
                   missed=False,
                   retry=False,
@@ -64,6 +65,7 @@ class TestCommand(unittest.TestCase):
       16, 0,                                          # channel_id
       70,                                             # rxlevel (- dBm)
       80,                                             # link budget
+      80,                                             # target rx level
       0,                                              # status
       200,                                            # fifo token
       0,                                              # seq

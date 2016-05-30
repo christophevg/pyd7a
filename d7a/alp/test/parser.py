@@ -21,6 +21,7 @@ class TestParser(unittest.TestCase):
       0, 0,                                           # channel_id
       0,                                              # rxlevel (- dBm)
       0,                                              # link budget
+      80,                                             # target rx level
       0,                                              # status
       0,                                              # fifo token
       0,                                              # seq
@@ -171,6 +172,7 @@ class TestParser(unittest.TestCase):
       16, 0,                                          # channel_index
       70,                                             # rx level
       80,                                             # link budget
+      80,                                             # target rx level
       0,                                              # status
       0xa5,                                           # fifo token
       0x00,                                           # request ID

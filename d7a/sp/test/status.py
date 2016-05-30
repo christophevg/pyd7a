@@ -17,6 +17,7 @@ class TestStatus(unittest.TestCase):
       16, 0,                                           # channel_id
       70,                                              # rxlevel (- dBm)
       80,                                              # link budget
+      80,                                              # target rx level
       0,                                              # status
       100,                                              # fifo token
       0,                                              # seq
@@ -24,21 +25,21 @@ class TestStatus(unittest.TestCase):
       16                                              # addressee ctrl (BCAST)
     ]
     bytes = bytearray(Status(
-      channel_header=0, channel_index=16, rx_level=70, link_budget=80,
+      channel_header=0, channel_index=16, rx_level=70, link_budget=80, target_rx_level=80,
       nls=False, missed=False, retry=False, unicast=False, fifo_token=100,
       seq_nr=0, response_to=CT(0, 20), addressee=Addressee()
     ))
-    self.assertEqual(len(bytes), 10)
+    self.assertEqual(len(bytes), 11)
     for i in xrange(10):
       self.assertEqual(expected[i], bytes[i])
 
     bytes = bytearray(Status(
-      channel_header=0, channel_index=16, rx_level=70, link_budget=80,
+      channel_header=0, channel_index=16, rx_level=70, link_budget=80, target_rx_level=80,
       unicast=False, fifo_token=100, seq_nr=0, response_to=CT(0, 20), addressee=Addressee(),
       nls=True, missed=True, retry=True))
 
-    expected[5] = int('11100000', 2) # nls, missed, retry, ucast
-    self.assertEqual(len(bytes), 10)
+    expected[6] = int('11100000', 2) # nls, missed, retry, ucast
+    self.assertEqual(len(bytes), 11)
     for i in xrange(10):
       self.assertEqual(expected[i], bytes[i])
 
