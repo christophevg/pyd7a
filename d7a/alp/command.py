@@ -9,6 +9,7 @@ from d7a.alp.operands.file import Offset, DataRequest, Data
 from d7a.alp.operands.interface_configuration import InterfaceConfiguration
 from d7a.alp.operations.forward import Forward
 from d7a.alp.operations.requests import ReadFileData
+from d7a.alp.operations.responses import ReturnFileData
 from d7a.alp.operations.write_operations import WriteFileData
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.parse_error import ParseError
@@ -38,25 +39,34 @@ class Command(Validatable):
 
     super(Command, self).__init__()
 
-  @staticmethod
-  def create_with_read_file_action(file_id, length, offset=0, interface_type=InterfaceType.HOST):
-    # default to host interface, when D7ASP interface is used prepend with Forward action
-    actions = []
+  def add_action(self, action):
+    self.actions.append(action)
+
+  def add_forward_action(self, interface_type=InterfaceType.HOST, interface_configuration=None):
+    if interface_configuration is not None and interface_type == InterfaceType.HOST:
+      raise ValueError("interface_configuration is not supported for interface_type HOST")
+
     if interface_type == InterfaceType.D7ASP:
-      actions.append(
+      if interface_configuration is None:
+        interface_configuration = Configuration()
+
+      self.actions.append(
         RegularAction(
           operation=Forward(
             operand=InterfaceConfiguration(
               interface_id=InterfaceType.D7ASP,
-              interface_configuration=Configuration(
-                # TODO
-              )
+              interface_configuration=interface_configuration
             )
           )
         )
       )
 
-    actions.append(
+  @staticmethod
+  def create_with_read_file_action(file_id, length, offset=0, interface_type=InterfaceType.HOST, interface_configuration=None):
+    # default to host interface, when D7ASP interface is used prepend with Forward action
+    cmd = Command()
+    cmd.add_forward_action(interface_type, interface_configuration)
+    cmd.add_action(
       RegularAction(
         operation=ReadFileData(
           operand=DataRequest(
@@ -67,27 +77,14 @@ class Command(Validatable):
       )
     )
 
-    return Command(actions=actions)
+    return cmd
 
   @staticmethod
-  def create_with_write_file_action(file_id, data=[], offset=0, interface_type=InterfaceType.HOST):
+  def create_with_write_file_action(file_id, data, offset=0, interface_type=InterfaceType.HOST, interface_configuration=None):
     # default to host interface, when D7ASP interface is used prepend with Forward action
-    actions = []
-    if interface_type == InterfaceType.D7ASP:
-      actions.append(
-        RegularAction(
-          operation=Forward(
-            operand=InterfaceConfiguration(
-              interface_id=InterfaceType.D7ASP,
-              interface_configuration=Configuration(
-                # TODO
-              )
-            )
-          )
-        )
-      )
-
-    actions.append(
+    cmd = Command()
+    cmd.add_forward_action(interface_type, interface_configuration)
+    cmd.add_action(
       RegularAction(
         operation=WriteFileData(
           operand=Data(
@@ -98,7 +95,25 @@ class Command(Validatable):
       )
     )
 
-    return Command(actions=actions)
+    return cmd
+
+  @staticmethod
+  def create_with_return_file_data_action(file_id, data, interface_type=InterfaceType.HOST, interface_configuration=None):
+    # default to host interface, when D7ASP interface is used prepend with Forward action
+    cmd = Command()
+    cmd.add_forward_action(interface_type, interface_configuration)
+    cmd.add_action(
+      RegularAction(
+        operation=ReturnFileData(
+          operand=Data(
+            data=data,
+            offset=Offset(id=file_id)
+          )
+        )
+      )
+    )
+
+    return cmd
 
   def __iter__(self):
     if self.interface_status is not None:

@@ -30,24 +30,6 @@ class TestReturnFileData(unittest.TestCase):
     self.assertEqual(bytes[5], int('00000011', 2))
     self.assertEqual(bytes[6], int('00000100', 2))
 
-  def test_command_generation(self):
-    data = list(bytearray("testing 123"))
-    cmd  = ReturnFileData.send_command(
-      file      = 0x66,
-      data      = data
-    )
-    expected = [
-      0x20,                                           # action=32/ReturnFileData
-      0x66,                                           # File ID
-      0x00                                            # offset
-    ]
-    expected.append(len(data))
-    expected.extend(data)
-    bytes = bytearray(cmd)
-    self.assertEqual(len(expected), len(bytes))
-    for i in xrange(len(expected)):
-      self.assertEqual(bytes[i], expected[i])
-
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestNoOperation)
   unittest.TextTestRunner(verbosity=2).run(suite)
