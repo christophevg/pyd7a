@@ -94,7 +94,7 @@ class Parser(object):
 
   def parse_alp_interface_status_d7asp(self, s):
     channel_header = s.read("uint:8") # TODO parse
-    channel_index = struct.unpack("<h", s.read("bytes:2"))[0]
+    channel_index = struct.unpack(">h", s.read("bytes:2"))[0]
     rx_level = s.read("int:8")
     link_budget = s.read("uint:8")
     target_rx_level = s.read("uint:8")
