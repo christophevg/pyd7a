@@ -76,7 +76,7 @@ class Parser(object):
     # skip until we find 0xc0, which might be a valid starting point
     try:
       self.buffer.pop(0)                      # first might be 0xc0
-      pos = self.buffer.index(0xc0)
+      pos = self.buffer.index('\xc0')
       self.buffer = self.buffer[pos:]
       return pos + 1
     except IndexError:                        # empty buffer
