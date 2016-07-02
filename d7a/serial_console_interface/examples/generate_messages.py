@@ -43,3 +43,16 @@ output_serial_frame(
     )
   )
 )
+
+output_serial_frame(
+  "Return file data, without QoS, broadcast",
+  Command.create_with_return_file_data_action(
+    file_id=0x40,
+    data=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    interface_type=InterfaceType.D7ASP,
+    interface_configuration=Configuration(
+      qos=QoS(resp_mod=QoS.RESP_MODE_NO),
+      addressee=Addressee(id_type=IdType.BCAST)
+    )
+  )
+)
