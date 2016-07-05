@@ -8,7 +8,8 @@ __author__ = 'glenn'
 class StatusActionOperandExtensions(object):
   ACTION_STATUS = 0
   INTERFACE_STATUS = 1
-  ALL   = [ ACTION_STATUS, INTERFACE_STATUS ]
+  FLUSH_RESULT_STATUS = 2 # TODO this is not defined in spec, to propose for inclusion
+  ALL   = [ ACTION_STATUS, INTERFACE_STATUS, FLUSH_RESULT_STATUS ]
 
   @staticmethod
   def SCHEMA():
