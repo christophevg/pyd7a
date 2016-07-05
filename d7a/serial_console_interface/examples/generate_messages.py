@@ -24,6 +24,7 @@ output_serial_frame(
     interface_configuration=Configuration(
       qos=QoS(resp_mod=QoS.RESP_MODE_ALL),
       addressee=Addressee(
+        access_class=0,
         id_type=IdType.UID,
         id=2656824718681607041 # TODO hex string
       )
@@ -39,7 +40,10 @@ output_serial_frame(
     interface_type=InterfaceType.D7ASP,
     interface_configuration=Configuration(
       qos=QoS(resp_mod=QoS.RESP_MODE_ALL),
-      addressee=Addressee(id_type=IdType.BCAST)
+      addressee=Addressee(
+        access_class=5,
+        id_type=IdType.BCAST
+      )
     )
   )
 )

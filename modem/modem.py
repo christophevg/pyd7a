@@ -28,17 +28,17 @@ class Modem:
     self.dev = serial.Serial(
       port=self.config.serial,
       baudrate=self.config.rate,
-      timeout=self.config.timeout,
+      #timeout=self.config.timeout,
     )
     self.log("connected to", self.config.serial)
 
   def log(self, *msg):
     print " ".join(map(str, msg))
 
-  def test(self):
+  def test(self, payload_size):
     command = Command.create_with_return_file_data_action(
       file_id=0x40,
-      data=range(50),
+      data=range(payload_size),
       interface_type=InterfaceType.D7ASP,
       interface_configuration=Configuration(
         qos=QoS(resp_mod=QoS.RESP_MODE_ALL),
@@ -53,17 +53,17 @@ class Modem:
     self.dev.write(data)
     self.dev.flushOutput()
     self.log("Sending command of size", len(data))
-    received_ack = False
-    while not received_ack:
+    flush_done = False
+    while not flush_done:
       data_received = self.dev.read()
       if len(data_received) > 0:
-        #self.log("< ", data_received)
         (cmds, info) = parser.parse(data_received)
-        if len(cmds) > 0:
-          received_ack = True # TODO check if this really is an ack
 
         for cmd in cmds:
-          self.log("Received command:\n{}".format(str(cmd)))
+          if cmd.flush_result != None:
+            flush_done = True
+            self.log("Flushing fifo {} done, success_bitmap={}"
+                     .format(cmd.flush_result.operand.fifo_token, cmd.flush_result.operand.success_bitmap))
 
         for error in info["errors"]:
           error["buffer"] = " ".join(["0x{:02x}".format(ord(b)) for b in error["buffer"]])
@@ -72,8 +72,11 @@ class Modem:
 if __name__ == "__main__":
   start = time.time()
   modem = Modem()
-  for i in range(50):
-    modem.test()
+  msg_count = 50
+  payload_size = 100
+  for i in range(msg_count):
+    modem.test(payload_size)
 
   end = time.time()
-  print("Completed in: {}".format(end - start))
+  print("Sending {} messages completed in: {} s".format(msg_count, end - start))
+  print("Throughput = {} bps with a payload size of {} bytes".format((msg_count * payload_size * 8) / (end - start), payload_size))
