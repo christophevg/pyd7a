@@ -20,8 +20,9 @@ class Modem:
     self.dev = serial.Serial(
       port=serial_device,
       baudrate=serial_rate,
-      #timeout=self.config.timeout,
+      timeout=0.5,
     )
+
     self.log("connected to", serial_device)
 
   def log(self, *msg):
@@ -49,5 +50,22 @@ class Modem:
           print error
 
   def read(self):
+    self.log("Bytes in serial buffer: {}".format(self.dev.inWaiting()))
     data_received = self.dev.read_all()
     return self.parser.parse(data_received)
+
+  def cancel_read(self):
+    self.stop_reading = True
+
+  def read_async(self):
+    self.stop_reading = False
+    while not self.stop_reading:
+      data_received = self.dev.read()
+      if len(data_received) > 0:
+        (cmds, info) = self.parser.parse(data_received)
+        for error in info["errors"]:
+          error["buffer"] = " ".join(["0x{:02x}".format(ord(b)) for b in error["buffer"]])
+          print error
+
+        for cmd in cmds:
+          yield cmd
