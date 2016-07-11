@@ -41,7 +41,7 @@ output_serial_frame(
     interface_configuration=Configuration(
       qos=QoS(resp_mod=QoS.RESP_MODE_ALL),
       addressee=Addressee(
-        access_class=5,
+        access_class=2,
         id_type=IdType.BCAST
       )
     )
@@ -57,6 +57,40 @@ output_serial_frame(
     interface_configuration=Configuration(
       qos=QoS(resp_mod=QoS.RESP_MODE_NO),
       addressee=Addressee(id_type=IdType.BCAST)
+    )
+  )
+)
+
+output_serial_frame(
+  "Return file data, with QoS, unicast",
+  Command.create_with_return_file_data_action(
+    file_id=0x40,
+    data=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    interface_type=InterfaceType.D7ASP,
+    interface_configuration=Configuration(
+      qos=QoS(resp_mod=QoS.RESP_MODE_ANY),
+      addressee=Addressee(
+        access_class=2,
+        id_type=IdType.UID,
+        id=0xDEADBEEFCAFEBABE
+      )
+    )
+  )
+)
+
+output_serial_frame(
+  "Read ID file, without QoS, broadcast",
+  Command.create_with_read_file_action(
+    file_id=0x00,
+    offset=0,
+    length=8,
+    interface_type=InterfaceType.D7ASP,
+    interface_configuration=Configuration(
+      qos=QoS(resp_mod=QoS.RESP_MODE_NO),
+      addressee=Addressee(
+        id_type=IdType.BCAST,
+        access_class=2
+      )
     )
   )
 )
