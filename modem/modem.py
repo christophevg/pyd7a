@@ -7,6 +7,9 @@ import serial
 
 from d7a.serial_console_interface.parser import Parser
 
+from pyd7a.d7a.alp.command import Command
+from pyd7a.d7a.system_files.dll_config import DllConfigFile
+
 
 class Modem:
   def __init__(self, serial_device, serial_rate):
@@ -23,15 +26,18 @@ class Modem:
     self.log("connected to", serial_device)
 
   def log(self, *msg):
-    print " ".join(map(str, msg))
+    pass #print " ".join(map(str, msg))
 
-  def d7asp_fifo_flush(self, alp_command):
+  def send_command(self, alp_command):
     data = self.parser.build_serial_frame(alp_command)
     self.dev.write(data)
     self.dev.flushOutput()
     self.log("Sending command of size", len(data))
+
+  def d7asp_fifo_flush(self, alp_command):
+    self.send_command(alp_command)
     flush_done = False
-    start_time =datetime.now()
+    start_time = datetime.now()
     timeout = False
     while not flush_done and not timeout:
       data_received = self.dev.read()

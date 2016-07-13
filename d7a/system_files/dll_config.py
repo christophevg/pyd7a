@@ -15,6 +15,10 @@ class DllConfigFile(Validatable):
     self.vid = vid
     super(DllConfigFile, self).__init__()
 
+  @property
+  def file_id(self):  # TODO base class
+    return 0x0a
+
   @staticmethod
   def parse(s):
     ac = s.read("uint:8")

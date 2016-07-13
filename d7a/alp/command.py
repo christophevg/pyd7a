@@ -110,6 +110,24 @@ class Command(Validatable):
     return cmd
 
   @staticmethod
+  def create_with_write_file_action(file, interface_type=InterfaceType.HOST, interface_configuration=None):
+    # default to host interface, when D7ASP interface is used prepend with Forward action
+    cmd = Command()
+    cmd.add_forward_action(interface_type, interface_configuration)
+    cmd.add_action(
+      RegularAction(
+        operation=WriteFileData(
+          operand=Data(
+            offset=Offset(id=file.file_id, offset=0), # TODO offset size
+            data=list(file)
+          )
+        )
+      )
+    )
+
+    return cmd
+
+  @staticmethod
   def create_with_return_file_data_action(file_id, data, interface_type=InterfaceType.HOST, interface_configuration=None):
     # default to host interface, when D7ASP interface is used prepend with Forward action
     cmd = Command()
