@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 import argparse
 import time
+
+from datetime import datetime
 import serial
 
-from d7a.alp.command import Command
-from d7a.alp.interface import InterfaceType
-from d7a.d7anp.addressee import Addressee, IdType
 from d7a.serial_console_interface.parser import Parser
-from d7a.sp.configuration import Configuration
-from d7a.sp.qos import QoS
 
 
 class Modem:
@@ -34,7 +31,9 @@ class Modem:
     self.dev.flushOutput()
     self.log("Sending command of size", len(data))
     flush_done = False
-    while not flush_done:
+    start_time =datetime.now()
+    timeout = False
+    while not flush_done and not timeout:
       data_received = self.dev.read()
       if len(data_received) > 0:
         (cmds, info) = self.parser.parse(data_received)
@@ -44,10 +43,15 @@ class Modem:
             flush_done = True
             self.log("Flushing fifo {} done, success_bitmap={}"
                      .format(cmd.flush_result.operand.fifo_token, cmd.flush_result.operand.success_bitmap))
+            break
 
         for error in info["errors"]:
           error["buffer"] = " ".join(["0x{:02x}".format(ord(b)) for b in error["buffer"]])
           print error
+
+      if (datetime.now() - start_time).total_seconds() > 2:
+        timeout = True
+        self.log("Flush timed out, skipping")
 
   def read(self):
     self.log("Bytes in serial buffer: {}".format(self.dev.inWaiting()))
