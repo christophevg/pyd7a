@@ -1,6 +1,7 @@
 import struct
 
 from pyd7a.d7a.support.schema import Validatable, Types
+from pyd7a.d7a.system_files.system_file_ids import SystemFileIds
 
 
 class DllConfigFile(Validatable):

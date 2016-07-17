@@ -136,7 +136,7 @@ class Command(Validatable):
       RegularAction(
         operation=WriteFileData(
           operand=Data(
-            offset=Offset(id=file.file_id, offset=0), # TODO offset size
+            offset=Offset(id=file.file_id(), offset=0), # TODO offset size
             data=list(file)
           )
         )
