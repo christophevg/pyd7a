@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 
 import binascii
+import struct
 import serial
 
 from d7a.alp.operations.requests import ReadFileData
@@ -31,8 +32,8 @@ class Modem:
       timeout=0.5,
     )
 
-    self.uid = binascii.hexlify(bytearray(self.read_uid()))
-    self.log("connected to {}, node UID {}".format(serial_device, self.uid))
+    self.uid = self.read_uid()
+    print("connected to {}, node UID {}".format(serial_device, hex(self.uid)))
 
   def read_uid(self):
     self.send_command(Command.create_with_read_file_action_system_file(UidFile()))
@@ -43,11 +44,11 @@ class Modem:
           if type(action) is RegularAction \
               and type(action.operation) is ReturnFileData \
               and action.operand.offset.id == SystemFileIds.UID:
-            return action.operand.data
+            return struct.unpack(">Q", bytearray(action.operand.data))[0]
 
 
   def log(self, *msg):
-    print " ".join(map(str, msg))
+    pass # print " ".join(map(str, msg))
 
   def send_command(self, alp_command):
     data = self.parser.build_serial_frame(alp_command)
