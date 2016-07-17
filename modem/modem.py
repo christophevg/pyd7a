@@ -3,18 +3,26 @@ import argparse
 import time
 
 from datetime import datetime
+
+import binascii
 import serial
 
+from d7a.alp.operations.requests import ReadFileData
+from d7a.alp.operations.responses import ReturnFileData
+from d7a.alp.regular_action import RegularAction
 from d7a.serial_console_interface.parser import Parser
 
-from pyd7a.d7a.alp.command import Command
-from pyd7a.d7a.system_files.dll_config import DllConfigFile
+from d7a.alp.command import Command
+from d7a.system_files.dll_config import DllConfigFile
+from d7a.system_files.uid import UidFile
+
+from pyd7a.d7a.system_files.system_file_ids import SystemFileIds
 
 
 class Modem:
   def __init__(self, serial_device, serial_rate):
-    self.setup_serial_device(serial_device, serial_rate)
     self.parser = Parser()
+    self.setup_serial_device(serial_device, serial_rate)
 
   def setup_serial_device(self, serial_device, serial_rate):
     self.dev = serial.Serial(
@@ -23,10 +31,23 @@ class Modem:
       timeout=0.5,
     )
 
-    self.log("connected to", serial_device)
+    self.uid = binascii.hexlify(bytearray(self.read_uid()))
+    self.log("connected to {}, node UID {}".format(serial_device, self.uid))
+
+  def read_uid(self):
+    self.send_command(Command.create_with_read_file_action_system_file(UidFile()))
+    while True: # TODO timeout
+      commands, info = self.read()
+      for command in commands:
+        for action in command.actions:
+          if type(action) is RegularAction \
+              and type(action.operation) is ReturnFileData \
+              and action.operand.offset.id == SystemFileIds.UID:
+            return action.operand.data
+
 
   def log(self, *msg):
-    pass #print " ".join(map(str, msg))
+    print " ".join(map(str, msg))
 
   def send_command(self, alp_command):
     data = self.parser.build_serial_frame(alp_command)
@@ -60,7 +81,7 @@ class Modem:
         self.log("Flush timed out, skipping")
 
   def read(self):
-    self.log("Bytes in serial buffer: {}".format(self.dev.inWaiting()))
+    # self.log("Bytes in serial buffer: {}".format(self.dev.inWaiting()))
     data_received = self.dev.read_all()
     return self.parser.parse(data_received)
 

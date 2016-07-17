@@ -82,8 +82,8 @@ class Command(Validatable):
       RegularAction(
         operation=ReadFileData(
           operand=DataRequest(
-            offset=Offset(id=file.file_id, offset=0), # TODO offset size
-            length=file.length
+            offset=Offset(id=file.file_id(), offset=0), # TODO offset size
+            length=file.length()
           )
         )
       )
