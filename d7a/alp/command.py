@@ -74,6 +74,24 @@ class Command(Validatable):
       )
 
   @staticmethod
+  def create_with_read_file_action_system_file(file, interface_type=InterfaceType.HOST, interface_configuration=None):
+    # default to host interface, when D7ASP interface is used prepend with Forward action
+    cmd = Command()
+    cmd.add_forward_action(interface_type, interface_configuration)
+    cmd.add_action(
+      RegularAction(
+        operation=ReadFileData(
+          operand=DataRequest(
+            offset=Offset(id=file.file_id, offset=0), # TODO offset size
+            length=file.length
+          )
+        )
+      )
+    )
+
+    return cmd
+
+  @staticmethod
   def create_with_read_file_action(file_id, length, offset=0, interface_type=InterfaceType.HOST, interface_configuration=None):
     # default to host interface, when D7ASP interface is used prepend with Forward action
     cmd = Command()
@@ -110,7 +128,7 @@ class Command(Validatable):
     return cmd
 
   @staticmethod
-  def create_with_write_file_action(file, interface_type=InterfaceType.HOST, interface_configuration=None):
+  def create_with_write_file_action_system_file(file, interface_type=InterfaceType.HOST, interface_configuration=None):
     # default to host interface, when D7ASP interface is used prepend with Forward action
     cmd = Command()
     cmd.add_forward_action(interface_type, interface_configuration)
