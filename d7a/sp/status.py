@@ -78,3 +78,20 @@ class Status(Validatable):
     yield chr(self.seq_nr)
     for byte in self.response_to: yield byte
     for byte in self.addressee: yield byte
+
+  def __str__(self):
+    return "unicast={}, nls={}, retry={}, missed={}, fifo_token={}, rx_level={}, " \
+          "seq_nr={}, target_rx_level={}, addressee={}, response_to={}, link_budget={}, channel_header={}".format(
+      self.unicast,
+      self.nls,
+      self.retry,
+      self.missed,
+      self.fifo_token,
+      self.rx_level,
+      self.seq_nr,
+      self.target_rx_level,
+      self.addressee,
+      self.response_to,
+      self.link_budget,
+      self.channel_header
+    )
