@@ -17,6 +17,7 @@ from d7a.sp.configuration import Configuration
 
 from d7a.support.schema           import Validatable, Types
 from d7a.alp.regular_action import RegularAction
+from d7a.alp.tag_request_action import TagRequestAction
 
 
 class Command(Validatable):
@@ -28,12 +29,18 @@ class Command(Validatable):
 
   def __init__(self, actions=[]):
     self.interface_status = None
+    self.tag_id = None
+    self.send_tag_response_when_completed = False
     self.actions = []
 
     for action in actions:
       if type(action) == StatusAction and action.status_operand_extension == StatusActionOperandExtensions.INTERFACE_STATUS:
         if self.interface_status != None: raise ParseError("An ALP command can contain one and only one Interface Status action")
         self.interface_status = action
+      if type(action) == TagRequestAction:
+        if self.tag_id != None: raise ParseError("An ALP command can contain one and only one Tag Request Action")
+        self.tag_id = action.operand.tag_id
+        self.send_tag_response_when_completed = action.respond_when_completed
       if type(action) == RegularAction:
         self.actions.append(action)
 

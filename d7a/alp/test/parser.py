@@ -197,10 +197,73 @@ class TestParser(unittest.TestCase):
     self.assertEqual(cmd.interface_status.operand.interface_status.response_to.mant, 20)
     self.assertEqual(cmd.interface_status.operand.interface_status.retry, False)
 
-
-
   #def test_interface_status_action_unknown_interface(self):
     # TODO 
+
+
+  def test_without_tag_request(self):
+    cmd_data = [
+                 0x20,  # action=32/ReturnFileData
+                 0x40,  # File ID
+                 0x00,  # offset
+                 0x04,  # length
+                 0x00, 0xf3, 0x00, 0x00  # data
+               ]
+
+    cmd = Parser().parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
+    self.assertEqual(len(cmd.actions), 1)
+    self.assertEqual(cmd.tag_id, None)
+
+  def test_with_tag_request(self):
+    cmd_data = [
+                 52,    # action=TagRequest, without EOP bit set
+                 14,    # tag ID
+                 0x20,  # action=32/ReturnFileData
+                 0x40,  # File ID
+                 0x00,  # offset
+                 0x04,  # length
+                 0x00, 0xf3, 0x00, 0x00  # data
+               ]
+
+    cmd = Parser().parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
+    self.assertEqual(len(cmd.actions), 1)
+    self.assertEqual(cmd.tag_id, 14)
+    self.assertEqual(cmd.send_tag_response_when_completed, False)
+
+
+  def test_with_tag_request_EOP_bit_set(self):
+    action = 52
+    action |= 1 << 7
+    cmd_data = [
+                 action,    # action=TagRequest, withEOP bit set
+                 14,    # tag ID
+                 0x20,  # action=32/ReturnFileData
+                 0x40,  # File ID
+                 0x00,  # offset
+                 0x04,  # length
+                 0x00, 0xf3, 0x00, 0x00  # data
+               ]
+
+    cmd = Parser().parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
+    self.assertEqual(len(cmd.actions), 1)
+    self.assertEqual(cmd.tag_id, 14)
+    self.assertEqual(cmd.send_tag_response_when_completed, True)
+
+  def test_with_multiple_tag_requests(self):
+    cmd_data = [
+      52,  # action=TagRequest, without EOP bit set
+      14,  # tag ID
+      52,  # another TagRequest while only 1 per command supported
+      15,  # tag ID
+      0x20,  # action=32/ReturnFileData
+      0x40,  # File ID
+      0x00,  # offset
+      0x04,  # length
+      0x00, 0xf3, 0x00, 0x00  # data
+    ]
+
+    with self.assertRaises(ParseError):
+      cmd = Parser().parse(ConstBitStream(bytes=cmd_data), len(cmd_data))
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestParser)

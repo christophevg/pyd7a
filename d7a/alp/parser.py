@@ -16,6 +16,9 @@ from d7a.parse_error              import ParseError
 from d7a.sp.status import Status
 from d7a.d7anp.addressee import Addressee
 from d7a.types.ct import CT
+from d7a.alp.operands.tag_id import TagId
+from d7a.alp.operations.tag_request import TagRequest
+from d7a.alp.tag_request_action import TagRequestAction
 
 
 class Parser(object):
@@ -42,7 +45,8 @@ class Parser(object):
       return{
         1 :   self.parse_alp_read_file_data_action,
         32 :  self.parse_alp_return_file_data_action,
-        34 :  self.parse_alp_return_status_action
+        34 :  self.parse_alp_return_status_action,
+        52 :  self.parse_tag_request_action
       }[op](b7, b6, s)
     except KeyError:
       raise ParseError("alp_action " + str(op) + " is not implemented")
@@ -88,6 +92,12 @@ class Parser(object):
     else: # action status
       pass # TODO
 
+  def parse_tag_request_action(self, b7, b6, s):
+    if b6:
+      raise ParseError("bit 6 is RFU")
+
+    tag_id = s.read("uint:8")
+    return TagRequestAction(respond_when_completed=b7, operation=TagRequest(operand=TagId(tag_id=tag_id)))
 
   def parse_alp_interface_status_host(self, s):
     pass # no interface status defined for host interface

@@ -3,7 +3,7 @@ COVERAGE=$(shell which coverage)
 
 PYTHONFILES=$(shell find d7a -name '*.py')
 
-NOSE=/Library/Python/2.7/site-packages/nose/core.py
+NOSE=/usr/lib/python2.7/dist-packages/nose/core.py
 
 all: clean test coverage
 
