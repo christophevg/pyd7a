@@ -5,9 +5,8 @@
 import struct
 
 from d7a.alp.command              import Command
-from d7a.alp.operands.flush_result_status import FlushResultStatusOperand
 from d7a.alp.operands.interface_status import InterfaceStatusOperand
-from d7a.alp.operations.status import InterfaceStatus, FlushResultStatus
+from d7a.alp.operations.status import InterfaceStatus
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.alp.regular_action import RegularAction
 from d7a.alp.operations.responses import ReturnFileData
@@ -72,9 +71,10 @@ class Parser(object):
     return Data(offset=offset, data=map(ord,data))
 
   def parse_alp_return_status_action(self, b7, b6, s):
-    if b6 and b7:
-      raise ParseError("Status Operand extension 3 is RFU")
-    elif b6 and not b7: # interface status
+    if b7:
+      raise ParseError("Status Operand extension 2 and 3 is RFU")
+
+    if b6: # interface status
       interface_id = s.read("uint:8")
       try:
         interface_status_operation = {
@@ -85,28 +85,8 @@ class Parser(object):
                             status_operand_extension=StatusActionOperandExtensions.INTERFACE_STATUS)
       except KeyError:
         raise ParseError("Received ALP Interface status for interface " + str(interface_id) + " which is not implemented")
-    elif not b6 and b7:
-      # TODO not included in spec yet, proposal
-      flush_result_status = self.parse_d7asp_flush_result(s)
-      return StatusAction(operation=flush_result_status,
-                          status_operand_extension=StatusActionOperandExtensions.FLUSH_RESULT_STATUS)
     else: # action status
       pass # TODO
-
-  def parse_d7asp_flush_result(self, s):
-    fifo_token = s.read("uint:8")
-    bitmap_byte_size = s.read("uint:8")
-    progress_bitmap = s.read("bytes:" + str(bitmap_byte_size))
-    success_bitmap = s.read("bytes:" + str(bitmap_byte_size))
-
-    return FlushResultStatus(
-      operand=FlushResultStatusOperand(
-          fifo_token=fifo_token,
-          bitmap_byte_size=bitmap_byte_size,
-          progress_bitmap=map(ord, progress_bitmap),
-          success_bitmap=map(ord, success_bitmap)
-      )
-    )
 
 
   def parse_alp_interface_status_host(self, s):

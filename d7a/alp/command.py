@@ -23,29 +23,17 @@ class Command(Validatable):
   
   SCHEMA = [{
     "actions": Types.LIST(RegularAction),
-    "interface_status": Types.OBJECT(StatusAction, nullable=True), # can be null for example when parsing DLL frames
-    "flush_result": Types.OBJECT(StatusAction, nullable=True)
+    "interface_status": Types.OBJECT(StatusAction, nullable=True) # can be null for example when parsing DLL frames
   }]
 
   def __init__(self, actions=[]):
     self.interface_status = None
-    self.flush_result = None
     self.actions = []
 
     for action in actions:
-      if type(action) == StatusAction:
-        if action.status_operand_extension == StatusActionOperandExtensions.INTERFACE_STATUS:
-          if self.interface_status != None:
-            raise ParseError("An ALP command can contain one and only one Interface Status action")
-          self.interface_status = action
-
-        # TODO to be discussed in PAG
-        if action.status_operand_extension == StatusActionOperandExtensions.FLUSH_RESULT_STATUS:
-          if self.flush_result != None:
-            raise ParseError("An ALP command can contain one and only one Flush Result Status action")
-
-          self.flush_result = action
-
+      if type(action) == StatusAction and action.status_operand_extension == StatusActionOperandExtensions.INTERFACE_STATUS:
+        if self.interface_status != None: raise ParseError("An ALP command can contain one and only one Interface Status action")
+        self.interface_status = action
       if type(action) == RegularAction:
         self.actions.append(action)
 
