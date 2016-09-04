@@ -24,6 +24,7 @@ class TestCommand(unittest.TestCase):
 
   def test_simple_received_return_file_data_command(self):
     cmd = Command(
+        generate_tag_request_action=False,
         actions=[
           RegularAction(
             operation=ReturnFileData(
@@ -82,6 +83,72 @@ class TestCommand(unittest.TestCase):
     self.assertEqual(len(bytes), len(expected))
     for i in xrange(len(expected)):
       self.assertEqual(bytes[i], expected[i])
+
+
+  def test_simple_received_return_file_data_command_with_tag_request(self):
+    cmd = Command(
+      tag_id=25,
+      actions=[
+        RegularAction(
+          operation=ReturnFileData(
+            operand=Data(
+              data=list(bytearray("Hello world")),
+              offset=Offset(id=0x51)
+            )
+          )
+        ),
+        StatusAction(
+          status_operand_extension=StatusActionOperandExtensions.INTERFACE_STATUS,
+          operation=InterfaceStatus(
+            operand=InterfaceStatusOperand(
+              interface_id=0xD7,
+              interface_status=D7ASpStatus(
+                channel_header=0,
+                channel_index=16,
+                rx_level=70,
+                link_budget=80,
+                target_rx_level=80,
+                nls=False,
+                missed=False,
+                retry=False,
+                unicast=False,
+                fifo_token=200,
+                seq_nr=0,
+                response_to=CT(mant=20),
+                addressee=Addressee()
+              )
+            )
+          )
+        )
+      ]
+    )
+    expected = [
+      0xB4,   # tag request with send response bit set
+      25,     # tag ID
+      0x62,  # Interface Status action
+      0xD7,  # D7ASP interface
+      0,  # channel header
+      16, 0,  # channel_id
+      70,  # rxlevel (- dBm)
+      80,  # link budget
+      80,  # target rx level
+      0,  # status
+      200,  # fifo token
+      0,  # seq
+      20,  # response timeout
+      16,  # addressee ctrl (BCAST)
+      0x20,  # action=32/ReturnFileData
+      0x51,  # File ID
+      0x00,  # offset
+      0x0b,  # length
+      0x48, 0x65, 0x6c, 0x6c, 0x6f,  # Hello
+      0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64  # World
+    ]
+    bytes = bytearray(cmd)
+    self.assertEqual(len(bytes), len(expected))
+    for i in xrange(len(expected)):
+      self.assertEqual(bytes[i], expected[i])
+
 
 if __name__ == '__main__':
   suite = unittest.TestLoader().loadTestsFromTestCase(TestCommand)

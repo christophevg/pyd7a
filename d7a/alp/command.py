@@ -4,12 +4,16 @@
 # class implementation of ALP commands
 
 # a D7A ALP Command consists of 1 or more ALP Actions
+import random
+
 from d7a.alp.interface import InterfaceType
 from d7a.alp.operands.file import Offset, DataRequest, Data
 from d7a.alp.operands.interface_configuration import InterfaceConfiguration
+from d7a.alp.operands.tag_id import TagId
 from d7a.alp.operations.forward import Forward
 from d7a.alp.operations.requests import ReadFileData
 from d7a.alp.operations.responses import ReturnFileData
+from d7a.alp.operations.tag_request import TagRequest
 from d7a.alp.operations.write_operations import WriteFileData
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.parse_error import ParseError
@@ -27,11 +31,12 @@ class Command(Validatable):
     "interface_status": Types.OBJECT(StatusAction, nullable=True) # can be null for example when parsing DLL frames
   }]
 
-  def __init__(self, actions=[]):
-    self.interface_status = None
-    self.tag_id = None
-    self.send_tag_response_when_completed = False
+  def __init__(self, actions=[], generate_tag_request_action=True, tag_id=None, send_tag_response_when_completed=True):
     self.actions = []
+    self.interface_status = None
+    self.generate_tag_request_action = generate_tag_request_action
+    self.tag_id = tag_id
+    self.send_tag_response_when_completed = send_tag_response_when_completed
 
     for action in actions:
       if type(action) == StatusAction and action.status_operand_extension == StatusActionOperandExtensions.INTERFACE_STATUS:
@@ -41,8 +46,12 @@ class Command(Validatable):
         if self.tag_id != None: raise ParseError("An ALP command can contain one and only one Tag Request Action")
         self.tag_id = action.operand.tag_id
         self.send_tag_response_when_completed = action.respond_when_completed
+        # we don't add this to self.actions but prepend it on serializing
       if type(action) == RegularAction:
         self.actions.append(action)
+
+    if self.generate_tag_request_action and self.tag_id == None:
+      self.tag_id = random.randint(0, 255)
 
     super(Command, self).__init__()
 
@@ -159,6 +168,16 @@ class Command(Validatable):
     return cmd
 
   def __iter__(self):
+    if self.generate_tag_request_action:
+      tag_request_action = TagRequestAction(
+        respond_when_completed=self.send_tag_response_when_completed,
+        operation=TagRequest(
+          operand=TagId(tag_id=self.tag_id)
+        )
+      )
+      for byte in tag_request_action:
+        yield byte
+
     if self.interface_status is not None:
       for byte in self.interface_status:
         yield byte
