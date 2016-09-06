@@ -7,11 +7,13 @@ import struct
 from d7a.alp.command              import Command
 from d7a.alp.operands.interface_status import InterfaceStatusOperand
 from d7a.alp.operations.status import InterfaceStatus
+from d7a.alp.operations.tag_response import TagResponse
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
 from d7a.alp.regular_action import RegularAction
 from d7a.alp.operations.responses import ReturnFileData
 from d7a.alp.operations.requests  import ReadFileData
 from d7a.alp.operands.file        import Offset, Data, DataRequest
+from d7a.alp.tag_response_action import TagResponseAction
 from d7a.parse_error              import ParseError
 from d7a.sp.status import Status
 from d7a.d7anp.addressee import Addressee
@@ -43,9 +45,10 @@ class Parser(object):
     op        = s.read("uint:6")
     try:
       return{
-        1 :   self.parse_alp_read_file_data_action,
+        1  :  self.parse_alp_read_file_data_action,
         32 :  self.parse_alp_return_file_data_action,
         34 :  self.parse_alp_return_status_action,
+        35 :  self.parse_tag_response_action,
         52 :  self.parse_tag_request_action
       }[op](b7, b6, s)
     except KeyError:
@@ -98,6 +101,14 @@ class Parser(object):
 
     tag_id = s.read("uint:8")
     return TagRequestAction(respond_when_completed=b7, operation=TagRequest(operand=TagId(tag_id=tag_id)))
+
+  def parse_tag_response_action(self, b7, b6, s):
+    if b7:
+      raise ParseError("bit 7 is RFU")
+
+    tag_id = s.read("uint:8")
+    return TagResponseAction(error=b6, operation=TagResponse(operand=TagId(tag_id=tag_id)))
+
 
   def parse_alp_interface_status_host(self, s):
     pass # no interface status defined for host interface

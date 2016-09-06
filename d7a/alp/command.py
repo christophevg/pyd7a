@@ -16,6 +16,7 @@ from d7a.alp.operations.responses import ReturnFileData
 from d7a.alp.operations.tag_request import TagRequest
 from d7a.alp.operations.write_operations import WriteFileData
 from d7a.alp.status_action import StatusAction, StatusActionOperandExtensions
+from d7a.alp.tag_response_action import TagResponseAction
 from d7a.parse_error import ParseError
 from d7a.sp.configuration import Configuration
 
@@ -47,6 +48,10 @@ class Command(Validatable):
         self.tag_id = action.operand.tag_id
         self.send_tag_response_when_completed = action.respond_when_completed
         # we don't add this to self.actions but prepend it on serializing
+      if type(action) == TagResponseAction:
+        if self.tag_id != None: raise ParseError("An ALP command can contain one and only one Tag Response Action")
+        self.tag_id = action.operand.tag_id
+        self.completed_with_error = action.error # TODO distinguish between commands and responses?
       if type(action) == RegularAction:
         self.actions.append(action)
 
