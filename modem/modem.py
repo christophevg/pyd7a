@@ -48,7 +48,7 @@ class Modem:
 
 
   def log(self, *msg):
-    pass # print " ".join(map(str, msg))
+    print " ".join(map(str, msg))
 
   def send_command(self, alp_command):
     data = self.parser.build_serial_frame(alp_command)
@@ -61,16 +61,19 @@ class Modem:
     flush_done = False
     start_time = datetime.now()
     timeout = False
+    self.log("flush start of command with tag {}".format(alp_command.tag_id))
     while not flush_done and not timeout:
       data_received = self.dev.read()
       if len(data_received) > 0:
         (cmds, info) = self.parser.parse(data_received)
 
         for cmd in cmds:
-          if cmd.flush_result != None:
+          if cmd.tag_id == alp_command.tag_id:
             flush_done = True
-            self.log("Flushing fifo {} done, success_bitmap={}"
-                     .format(cmd.flush_result.operand.fifo_token, cmd.flush_result.operand.success_bitmap))
+            if cmd.completed_with_error:
+              self.log("Flushing cmd with tag {} done, with error".format(cmd.tag_id))
+            else:
+              self.log("Flushing cmd with tag {} done, without error".format(cmd.tag_id))
             break
 
         for error in info["errors"]:
