@@ -17,7 +17,7 @@ from d7a.alp.command import Command
 from d7a.system_files.dll_config import DllConfigFile
 from d7a.system_files.uid import UidFile
 
-from pyd7a.d7a.system_files.system_file_ids import SystemFileIds
+from d7a.system_files.system_file_ids import SystemFileIds
 
 
 class Modem:
