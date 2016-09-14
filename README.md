@@ -16,10 +16,16 @@ We use `Cerberus` for validating attributes. But we need a version &ge; 0.10, wh
 $ sudo pip install git+git://github.com/nicolaiarocci/cerberus.git
 ```
 
-To run unit tests we use `nose`:
+To run unit tests we use `unittest2`:
 
 ```bash
-$ sudo pip install nose
+$ sudo pip install unittest2
+```
+
+And while we run tests, we check our coverage:
+
+```bash
+$ sudo pip install coverage
 ```
 
 For the manipulation of bitstrings, we use `bitstring`:
