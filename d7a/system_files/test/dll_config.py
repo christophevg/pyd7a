@@ -2,7 +2,7 @@ import unittest
 
 from bitstring import ConstBitStream
 
-from pyd7a.d7a.system_files.dll_config import DllConfigFile
+from d7a.system_files.dll_config import DllConfigFile
 
 
 class TestDllConfigFile(unittest.TestCase):

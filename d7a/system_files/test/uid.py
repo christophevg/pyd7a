@@ -1,7 +1,7 @@
 import struct
 import unittest
 from bitstring import ConstBitStream
-from pyd7a.d7a.system_files.uid import UidFile
+from d7a.system_files.uid import UidFile
 
 
 class TestUiFile(unittest.TestCase):
