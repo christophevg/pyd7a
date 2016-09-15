@@ -166,7 +166,7 @@ class TestParser(unittest.TestCase):
 
   def test_interface_status_action_d7asp(self):
     alp_action_bytes = [
-      34 + 0b0010000,                                 # action=34 + inf status
+      34 + 0b01000000,                                 # action=34 + inf status
       0xd7,                                           # interface ID
       0x00,                                           # channel_header
       0, 16,                                          # channel_index
