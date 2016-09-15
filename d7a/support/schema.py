@@ -11,6 +11,7 @@ import inspect
 
 class ObjectValidator(Validator):
   def _validate_isinstance(self, clazz, field, value):
+    """ {'nullable': True } """ # dummy validation schema to avoid warning ;-)
     if not isinstance(value, clazz):
       self._error(field, "Should be instance of " + clazz.__name__)
   
