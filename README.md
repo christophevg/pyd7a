@@ -10,10 +10,10 @@ This repository contains a collection of Python modules that can help when worki
 
 ### Dependencies
 
-We use `Cerberus` for validating attributes. But we need a version &ge; 0.10, which is currently still a development version.
+We use `Cerberus` for validating attributes.
 
 ```bash
-$ sudo pip install git+git://github.com/nicolaiarocci/cerberus.git
+$ sudo pip install cerberus
 ```
 
 To run unit tests we use `unittest2`:
