@@ -166,10 +166,10 @@ class TestParser(unittest.TestCase):
 
   def test_interface_status_action_d7asp(self):
     alp_action_bytes = [
-      0x62,                                           # action=51/Interface status
+      34 + 0b0010000,                                 # action=34 + inf status
       0xd7,                                           # interface ID
       0x00,                                           # channel_header
-      16, 0,                                          # channel_index
+      0, 16,                                          # channel_index
       70,                                             # rx level
       80,                                             # link budget
       80,                                             # target rx level
@@ -186,7 +186,7 @@ class TestParser(unittest.TestCase):
     self.assertEqual(cmd.interface_status.op, 34)
     self.assertEqual(type(cmd.interface_status.operand), InterfaceStatusOperand)
     self.assertEqual(cmd.interface_status.operand.interface_id, 0xD7)
-    self.assertEqual(cmd.interface_status.operand.interface_status.channel_header, 0) # TODO
+    self.assertEqual(cmd.interface_status.operand.interface_status.channel_header, 0)
     self.assertEqual(cmd.interface_status.operand.interface_status.channel_index, 16)
     self.assertEqual(cmd.interface_status.operand.interface_status.rx_level, 70)
     self.assertEqual(cmd.interface_status.operand.interface_status.link_budget, 80)

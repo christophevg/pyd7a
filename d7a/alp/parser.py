@@ -40,9 +40,9 @@ class Parser(object):
 
   def parse_alp_action(self, s):
     # meaning of first 2 bits depend on action opcode
-    b7     = s.read("bool")
-    b6      = s.read("bool")
-    op        = s.read("uint:6")
+    b7 = s.read("bool")
+    b6 = s.read("bool")
+    op = s.read("uint:6")
     try:
       return{
         1  :  self.parse_alp_read_file_data_action,
@@ -114,28 +114,30 @@ class Parser(object):
     pass # no interface status defined for host interface
 
   def parse_alp_interface_status_d7asp(self, s):
-    channel_header = s.read("uint:8") # TODO parse
-    channel_index = struct.unpack(">h", s.read("bytes:2"))[0]
-    rx_level = s.read("int:8")
-    link_budget = s.read("uint:8")
+    channel_header  = s.read("uint:8") # TODO parse
+    channel_index   = struct.unpack(">h", s.read("bytes:2"))[0]
+    rx_level        = s.read("int:8")
+    link_budget     = s.read("uint:8")
     target_rx_level = s.read("uint:8")
-    nls         = s.read("bool")
-    missed      = s.read("bool")
-    retry       = s.read("bool")
-    unicast     = s.read("bool" )
-    _           = s.read("pad:4")
-    fifo_token  = s.read("uint:8")
-    seq_nr  = s.read("uint:8")
-    response_to = CT.parse(s)
-    addressee   = Addressee.parse(s)
+    nls             = s.read("bool")
+    missed          = s.read("bool")
+    retry           = s.read("bool")
+    unicast         = s.read("bool" )
+    _               = s.read("pad:4")
+    fifo_token      = s.read("uint:8")
+    seq_nr          = s.read("uint:8")
+    response_to     = CT.parse(s)
+    addressee       = Addressee.parse(s)
 
-    status = Status(channel_header=channel_header, channel_index=channel_index, rx_level=rx_level, link_budget=link_budget,
-                  target_rx_level=target_rx_level, nls=nls, missed=missed, retry=retry, unicast=unicast,
-                  fifo_token=fifo_token, seq_nr=seq_nr,
-                  response_to=response_to, addressee=addressee)
+    status = Status(channel_header=channel_header, channel_index=channel_index,
+                    rx_level=rx_level, link_budget=link_budget,
+                    target_rx_level=target_rx_level, nls=nls, missed=missed,
+                    retry=retry, unicast=unicast, fifo_token=fifo_token,
+                    seq_nr=seq_nr, response_to=response_to, addressee=addressee)
 
-    return InterfaceStatus(operand=InterfaceStatusOperand(interface_id=0xd7, interface_status=status))
-
+    return InterfaceStatus(
+      operand=InterfaceStatusOperand(interface_id=0xd7, interface_status=status)
+    )
 
   def parse_offset(self, s):
     id     = s.read("uint:8")
