@@ -1,3 +1,5 @@
+#!/usr/bin/env PYTHONPATH=../:. python
+
 import argparse
 
 from d7a.alp.command import Command
