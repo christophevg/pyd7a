@@ -19,6 +19,7 @@ from d7a.system_files.uid import UidFile
 
 from d7a.system_files.system_file_ids import SystemFileIds
 
+from pprint import pprint
 
 class Modem:
   def __init__(self, serial_device, serial_rate):
@@ -53,7 +54,7 @@ class Modem:
   def send_command(self, alp_command):
     data = self.parser.build_serial_frame(alp_command)
     self.dev.write(data)
-    self.dev.flushOutput()
+    self.dev.flush()
     self.log("Sending command of size", len(data))
 
   def d7asp_fifo_flush(self, alp_command):
