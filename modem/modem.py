@@ -32,9 +32,9 @@ class Modem:
       baudrate=serial_rate,
       timeout=0.5,
     )
-
-    self.uid = self.read_uid()
-    print("connected to {}, node UID {}".format(serial_device, hex(self.uid)))
+    # FIXME: this seems to fail sometimes ?!
+    # self.uid = self.read_uid()
+    # print("connected to {}, node UID {}".format(serial_device, hex(self.uid)))
 
   def read_uid(self):
     self.send_command(Command.create_with_read_file_action_system_file(UidFile()))
