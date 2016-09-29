@@ -19,7 +19,6 @@ from d7a.system_files.uid import UidFile
 
 from d7a.system_files.system_file_ids import SystemFileIds
 
-from pprint import pprint
 
 class Modem:
   def __init__(self, serial_device, serial_rate):
