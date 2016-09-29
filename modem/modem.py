@@ -21,7 +21,8 @@ from d7a.system_files.system_file_ids import SystemFileIds
 
 
 class Modem:
-  def __init__(self, serial_device, serial_rate):
+  def __init__(self, serial_device, serial_rate, show_logging=True):
+    self.show_logging = show_logging
     self.parser = Parser()
     self.setup_serial_device(serial_device, serial_rate)
 
@@ -48,7 +49,7 @@ class Modem:
 
 
   def log(self, *msg):
-    print " ".join(map(str, msg))
+    if self.show_logging: print " ".join(map(str, msg))
 
   def send_command(self, alp_command):
     data = self.parser.build_serial_frame(alp_command)
