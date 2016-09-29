@@ -40,6 +40,20 @@ PyCRC is used for CRC calculations:
 $ sudo pip install PyCRC
 ```
 
+Make sure you have a version of `pyserial` that has `read_all`:
+
+```bash
+$ pip show pyserial | grep Version
+Version: 2.6
+
+$ sudo pip install --upgrade pyserial
+...
+Cleaning up...
+
+$ pip show pyserial | grep Version
+Version: 3.1.1
+```
+
 ### pyD7A
 
 Minimal survival commands:
