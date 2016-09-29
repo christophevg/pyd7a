@@ -21,16 +21,20 @@ from d7a.system_files.system_file_ids import SystemFileIds
 
 
 class Modem:
-  def __init__(self, serial_device, serial_rate, show_logging=True):
+  def __init__(self, device, baudrate, show_logging=True):
     self.show_logging = show_logging
     self.parser = Parser()
-    self.setup_serial_device(serial_device, serial_rate)
+    self.config = {
+      "device"   : device,
+      "baudrate" : baudrate
+    }
+    self.setup_serial_device()
 
-  def setup_serial_device(self, serial_device, serial_rate):
+  def setup_serial_device(self):
     self.dev = serial.Serial(
-      port=serial_device,
-      baudrate=serial_rate,
-      timeout=0.5,
+      port     = self.config["device"],
+      baudrate = self.config["baudrate"],
+      timeout  = 0.5,
     )
     # FIXME: this seems to fail sometimes ?!
     # self.uid = self.read_uid()
@@ -86,9 +90,13 @@ class Modem:
         self.log("Flush timed out, skipping")
 
   def read(self):
-    # self.log("Bytes in serial buffer: {}".format(self.dev.inWaiting()))
-    data_received = self.dev.read_all()
-    return self.parser.parse(data_received)
+    try:
+      data = self.dev.read_all()
+    except serial.SerialException:
+      time.sleep(5)
+      self.setup_serial_device()
+      data = ""
+    return self.parser.parse(data)
 
   def cancel_read(self):
     self.stop_reading = True
