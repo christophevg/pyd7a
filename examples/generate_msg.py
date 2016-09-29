@@ -1,4 +1,4 @@
-#!/usr/bin/env PYTHONPATH=../:. python
+#!/usr/bin/env python
 
 # command line tool to generate ALP messages
 # author: Christophe VG <contact@christophe.vg>

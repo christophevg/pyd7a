@@ -1,4 +1,4 @@
-#!/usr/bin/env PYTHONPATH=../:. python
+#!/usr/bin/env python
 
 from d7a.serial_console_interface.parser import Parser
 from pprint import pprint

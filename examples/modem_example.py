@@ -1,4 +1,4 @@
-#!/usr/bin/env PYTHONPATH=../:. python
+#!/usr/bin/env python
 
 import argparse
 
